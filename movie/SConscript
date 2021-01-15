@@ -1,0 +1,29 @@
+import os
+
+Import("env")
+Import("Helper")
+env = env.Clone()
+
+# check if Blender installed
+Helper.checkProgramInstalled(env, "blender", fail=True)
+
+# paths with additional Python scripts
+pyDirs = [Dir(".").abspath, "/home/valentjn/git/thesis/py"]
+          
+# adjust PYTHONPATH
+env["ENV"]["PYTHONPATH"] = os.pathsep.join(
+    pyDirs + [env["ENV"].get("PYTHONPATH", "")])
+
+# search for Python files
+pyFiles = []
+for pyDir in pyDirs:
+  for root, dirs, files in os.walk(pyDir):
+    pyFiles.extend([os.path.join(root, x) for x in files
+                    if x.endswith(".py")])
+
+# run Blender (use dummy target to force of Blender)
+blender = env.Command("dummyTarget", "renderMovie.py",
+                      "blender -p 3288 0 1920 1080 --python $SOURCE")
+
+# set dependencies
+env.Depends(blender, pyFiles)

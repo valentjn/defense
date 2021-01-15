@@ -1,0 +1,94 @@
+% location of bibliography
+\bibliography{../bib/bibliography}
+
+% silence warning "Patching footnotes failed" when using the biblatex package
+\WarningFilter{biblatex}{Patching footnotes failed}
+
+% define own citation command
+\let\origcite\cite
+\renewcommand*{\cite}[2][]{%
+  \begingroup%
+    \renewcommand*{\thefootnote}{}%
+    \parindent=0pt%
+    \footnote{%
+      \citeauthor{#2}: \citetitle{#2}
+      \if\relax\detokenize{#1}\relax%
+        (\citeyear{#2})%
+      \else
+        (#1)%
+      \fi%
+    }%
+    \addtocounter{footnote}{-1}%
+  \endgroup%
+}
+
+% only use last name of authors, omit first names
+\DeclareNameFormat{author}{%
+  \usebibmacro{name:family}{%
+    \namepartfamily%
+  }{\namepartgiveni}{\namepartprefixi}{\namepartsuffix}%
+  \usebibmacro{name:andothers}%
+}
+
+% suppress "and" in author names
+\renewcommand*{\multinamedelim}{\addcomma\space}
+\renewcommand*{\finalnamedelim}{\addcomma\space}
+
+% insert colon after author names in bibliography
+\renewcommand*{\labelnamepunct}{\addcolon\space}
+
+% separate BibLaTeX units with commas instead of periods
+\renewcommand*{\newunitpunct}{\addcomma\space}
+
+% make paper titles italic, remove quotation marks
+\DeclareFieldFormat[article]{citetitle}{\mkbibemph{#1}}
+\DeclareFieldFormat[article]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[article]{journaltitle}{#1}
+\DeclareFieldFormat[article]{issuetitle}{#1}
+\DeclareFieldFormat[article]{issuesubtitle}{#1}
+\DeclareFieldFormat[inbook]{citetitle}{\mkbibemph{#1}}
+\DeclareFieldFormat[inbook]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[inbook]{booktitle}{#1}
+\DeclareFieldFormat[inbook]{maintitle}{#1}
+\DeclareFieldFormat[incollection]{citetitle}{\mkbibemph{#1}}
+\DeclareFieldFormat[incollection]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[incollection]{booktitle}{#1}
+\DeclareFieldFormat[incollection]{maintitle}{#1}
+\DeclareFieldFormat[inproceedings]{citetitle}{\mkbibemph{#1}}
+\DeclareFieldFormat[inproceedings]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[inproceedings]{booktitle}{#1}
+\DeclareFieldFormat[inproceedings]{maintitle}{#1}
+\DeclareFieldFormat[inreference]{booktitle}{#1}
+\DeclareFieldFormat[inreference]{maintitle}{#1}
+\DeclareFieldFormat[thesis]{citetitle}{\mkbibemph{#1}}
+\DeclareFieldFormat[thesis]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[unpublished]{citetitle}{\mkbibemph{#1}}
+\DeclareFieldFormat[unpublished]{title}{\mkbibemph{#1}}
+
+% fix title capitalization to sentence case (all lowercase)
+\DeclareFieldFormat{titlecase}{\MakeTitleCase{#1}}
+
+% .. but don't change journal titles, book titles, and so on
+\newrobustcmd{\MakeTitleCase}[1]{%
+  \ifthenelse{%
+    \ifcurrentfield{booktitle}\OR\ifcurrentfield{booksubtitle}%
+    \OR\ifcurrentfield{maintitle}\OR\ifcurrentfield{mainsubtitle}%
+    \OR\ifcurrentfield{journaltitle}\OR\ifcurrentfield{journalsubtitle}%
+    \OR\ifcurrentfield{issuetitle}\OR\ifcurrentfield{issuesubtitle}%
+    \OR\ifentrytype{book}\OR\ifentrytype{mvbook}\OR\ifentrytype{bookinbook}%
+    \OR\ifentrytype{booklet}\OR\ifentrytype{suppbook}%
+    \OR\ifentrytype{collection}\OR\ifentrytype{mvcollection}%
+    \OR\ifentrytype{suppcollection}\OR\ifentrytype{manual}%
+    \OR\ifentrytype{periodical}\OR\ifentrytype{suppperiodical}%
+    \OR\ifentrytype{proceedings}\OR\ifentrytype{mvproceedings}%
+    \OR\ifentrytype{reference}\OR\ifentrytype{mvreference}%
+    \OR\ifentrytype{thesis}\OR\ifentrytype{online}%
+  }{%
+    #1%
+  }{%
+    \MakeSentenceCase*{#1}%
+  }%
+}
+
+% suppress "In:" before journal names
+\renewbibmacro*{in:}{}

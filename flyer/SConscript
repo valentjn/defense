@@ -1,0 +1,58 @@
+import os
+
+Import("env")
+Import("Helper")
+env = env.Clone()
+
+# increase line length of LuaLaTeX error log lines by
+# setting environment variables
+env["ENV"]["max_print_line"] = "10000"
+env["ENV"]["error_line"] = "254"
+env["ENV"]["half_error_line"] = "238"
+
+# use LuaLaTeX as compiler (successor of PDFLaTeX)
+Helper.checkProgramInstalled(env, "lualatex", fail=True)
+# filter the output of LuaLaTeX with custom script
+env.Replace(PDFLATEX="python3 ../../tools/filterOutput.py lualatex")
+
+# show file and line number for errors
+env.Append(PDFLATEXFLAGS="--file-line-error")
+# enable SyncTeX for GUI editors
+env.Append(PDFLATEXFLAGS="--synctex=1")
+
+# set directories
+inDir  = env.Dir("in")
+tmpDir = env.Dir("tmp")
+outDir = env.Dir("out")
+
+# create out directory
+createDirs = (not env.GetOption("help")) and (not env.GetOption("clean"))
+if createDirs:
+  env.Execute(Mkdir(tmpDir.abspath))
+  env.Execute(Mkdir(outDir.abspath))
+
+# convert front SVG to PNG
+Helper.checkProgramInstalled(env, "inkscape", fail=True)
+svg2PNG = ("inkscape --export-png=$TARGET --export-area-page "
+           "--export-dpi=400 $SOURCE")
+frontSVG = os.path.join(inDir.abspath,  "front.svgz")
+frontPNG = os.path.join(tmpDir.abspath, "front.png")
+env.Command(frontPNG, frontSVG, svg2PNG)
+
+# copy thesis
+thesisPDF = env.Install(
+    tmpDir, os.path.join("..", "gfx", "pre", "thesis.pdf"))
+
+# compile flyer PDF
+flyerPDF = env.PDF(
+    target=os.path.join(tmpDir.abspath, "flyer.pdf"),
+    source=os.path.join(inDir.abspath, "flyer.tex"))
+
+# set dependencies of flyer PDF
+env.Depends(flyerPDF, [frontPNG, thesisPDF])
+
+# crop flyer PDF
+cropPDF = ("pdfjam --trim '4.23mm 4.23mm 4.23mm 4.23mm' --clip true "
+           "--outfile $TARGET $SOURCE")
+flyerPDFCropped = os.path.join(outDir.abspath, "flyer.pdf")
+env.Command(flyerPDFCropped, flyerPDF, cropPDF)

@@ -1,0 +1,74 @@
+% language and encodings
+\usepackage[ngerman,american]{babel}
+
+% amsmath with improvements
+\usepackage{mathtools}
+
+% use TeX Gyre Heros as sans-serif font
+\usepackage{tgheros}
+
+% need T1 font encoding for Charter,
+% otherwise there will be "undefined font shape" warnings
+\usepackage[T1]{fontenc}
+
+% use Bitstream Charter as main font
+\usepackage[bitstream-charter]{mathdesign}
+
+% micro-typographic adjustments
+\usepackage[
+  % don't deactivate extensions due to document class draft option
+  final,
+  % increase letter spacing in small-caps
+  tracking=smallcaps,
+  % font expansion: don't stretch/shrink lines by more than 1%,
+  % default of 2% looks a bit weird
+  stretch=10,
+  shrink=10,
+]{microtype}
+
+% transparency for included graphics (with fixes for LuaLaTeX;
+% unfortunately, the fixes break TikZ opacity...)
+\protected\def\pdfcolorstack{\pdfextension colorstack}
+\def\pdfcolorstackinit{\pdffeedback colorstackinit}
+\usepackage{transparent}
+
+% TikZ
+\usepackage{tikz}
+
+% plots
+\usepackage{pgfplots}
+
+% contours
+\usepackage{contour}
+
+% insert space if needed
+\usepackage{xspace}
+
+% customize itemize/enumerate, unfortunately this breaks
+% beamer's overlay specification (and maybe other tweaks as well)
+\usepackage{enumitem}
+
+% better tables
+\usepackage{booktabs}
+
+% consistent style of units and numbers
+\usepackage{siunitx}
+
+% silence warnings
+\usepackage{silence}
+
+% silence "'babel/polyglossia' detected but 'csquotes' missing" warning
+% with BibLaTeX
+\usepackage{csquotes}
+
+% BibLaTeX
+\usepackage[
+  backend=biber,        % use Biber as backend
+  citestyle=authoryear, % citation style during the presentation
+  giveninits=true,      % to abbreviate first names on Literature slide
+  uniquename=init,      % to silence a "conflicting options" warning
+  doi=false,            % omit DOIs on Literature slide
+  isbn=false,           % omit ISBNs on Literature slide
+  url=false,            % omit URLs on Literature slide
+  hyperref=false,       % no hyperlinks
+]{biblatex}

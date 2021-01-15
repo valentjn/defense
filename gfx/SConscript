@@ -1,0 +1,161 @@
+import gzip
+import os
+import re
+import sys
+
+Import("env")
+Import("Helper")
+env = env.Clone()
+
+# install pre-made graphics
+pre = (env.Glob(os.path.join("pre", "*.pdf")) +
+       env.Glob(os.path.join("pre", "*.png")))
+pre = env.Install(env["BUILD_DIR"], pre)
+
+# search for Python scripts
+pys = env.Glob(os.path.join("py", "*.py"))
+pdfs = []
+pgfs = []
+helperPys = []
+
+# search for helper Python scripts
+pyDir = "/home/valentjn/git/thesis/py"
+for root, dirs, files in os.walk(os.path.join(pyDir, "helper")):
+  helperPys.extend([os.path.join(root, x) for x in files
+                    if x.endswith(".py")])
+
+# cpp directory
+cppDir = "/home/valentjn/git/thesis/build/cpp"
+
+# set environment variables
+env["ENV"]["BUILD_DIR"] = env["BUILD_DIR"].abspath
+env["ENV"]["LD_LIBRARY_PATH"] = ":".join(
+  [env["ENV"].get("LD_LIBRARY_PATH", ""),
+   os.path.join(cppDir, "sgpp", "lib", "sgpp")])
+env["ENV"]["PYTHONPATH"] = ":".join(
+  [env["ENV"].get("PYTHONPATH", ""), pyDir,
+   os.path.join(cppDir, "sgpp", "lib"),
+   os.path.join(cppDir, "sgpp", "lib", "pysgpp")])
+
+# check for dependencies
+Helper.checkProgramInstalled(env, "pdfcrop", fail=True)
+Helper.checkProgramInstalled(env, "python3", fail=True)
+
+for py in pys:
+  # determine number of generated images for this *.py file
+  # for this, we need a special comment of the form
+  # "# number of output figures: 3" in the Python file
+  # (SCons needs the number for its dependency graph;
+  # however, this is impossible to determine with SCons alone...)
+  name = os.path.splitext(py.name)[0]
+  if name.startswith("helper"): continue
+  with open(py.abspath, "r") as f: pyCode = f.readlines()
+  pdfCount = 1
+  
+  dependencies = []
+  
+  for line in pyCode:
+    if line.startswith("# number of output figures = "):
+      number = line.split("=")[-1].strip()
+      if len(number.strip("0123456789")) == 0: pdfCount = int(number)
+    elif line.startswith("# dependencies = "):
+      dependencyNames = line.split("=")[-1].strip().split(",")
+      
+      for dependencyName in dependencyNames:
+        dependencyName = dependencyName.strip()
+        
+        if dependencyName == "SG++":
+          pass
+        elif dependencyName.startswith("cpp"):
+          pass
+        else:
+          raise ValueError("Unknown dependency \"{}\".".format(
+              dependencyName))
+    elif not line.startswith("#"):
+      break
+  
+  # generate list of *.pdf files
+  curPDFs = [os.path.join(env["BUILD_DIR"].abspath, "{}_{}.pdf".format(name, i))
+             for i in range(1, pdfCount + 1)]
+  
+  # generate *.pdf files
+  env.Command(curPDFs, py, "python3 $SOURCE")
+  pdfs.extend(curPDFs)
+  env.Depends(curPDFs, dependencies)
+  
+  # save list of *.pgf files
+  pgfs.extend([x[:-4] + ".pgf" for x in curPDFs])
+
+# *.pdf files depend on helper scripts (local helper *.py files and global tools)
+env.Depends(pdfs, helperPys)
+
+# don't delete PDFs before calling Python scripts
+env.Precious(pdfs)
+
+# LuaLaTeX depends on pre-made graphics as well
+pdfs.extend(pre)
+
+# check dependencies for conversion of SVGs
+Helper.checkProgramInstalled(env, "inkscape", fail=True)
+Helper.checkProgramInstalled(env, "convert", fail=True)
+svg2PNG = ("inkscape --export-png=$TARGET --export-area-page "
+           "--export-dpi=96 $SOURCE")
+svg2PDF = "inkscape --export-pdf=$TARGET $SOURCE"
+
+# convert SVGs to PNGs
+for name in ["cover", "acknowledgments", "overview"]:
+  svg = os.path.join("pre", "{}.svgz".format(name))
+  png = os.path.join(env["BUILD_DIR"].abspath, "{}.png".format(name))
+  env.Command(png, svg, svg2PNG)
+  pdfs.append(png)
+
+# convert SVGs to PDFs
+for name in ["glasses"]:
+  svg = os.path.join("pre", "{}.svgz".format(name))
+  pdf = os.path.join(env["BUILD_DIR"].abspath, "{}.pdf".format(name))
+  env.Command(pdf, svg, svg2PDF)
+  pdfs.append(pdf)
+
+# rasterize footer
+def createFooterUnmasked(target, source, env):
+  with gzip.open(source[0].abspath, "rt") as f: svg = f.read()
+  for color in env["colors"]:
+    j = svg.rfind("<", 0, svg.find(color))
+    k = svg.find("/>", j) + 2
+    svg = svg[:j] + svg[k:]
+  with open(target[0].abspath, "w") as f: f.write(svg)
+
+def createFooterMask(target, source, env):
+  with gzip.open(source[0].abspath, "rt") as f: svg = f.read()
+  i = svg.find(">", svg.find("id=\"layer1\"")) + 2
+  j = svg.rfind("<", 0, svg.find(env["color"]))
+  k = svg.find("/>", j) + 2
+  l = svg.find("</g>", k)
+  svg = svg[:i] + svg[j:k] + svg[l:]
+  svg = svg.replace(env["color"], "#000000")
+  with open(target[0].abspath, "w") as f: f.write(svg)
+
+parts, colors = ["Bar", "Circle"], ["#ff00ff", "#ffff00"]
+footerSVG = os.path.join("pre", "footer.svgz")
+footerUnmaskedSVG = os.path.join(
+    env["BUILD_DIR"].abspath, "footerUnmasked.svg")
+footerUnmaskedPNG = os.path.join(
+    env["BUILD_DIR"].abspath, "footer.png")
+env.Command(footerUnmaskedSVG, footerSVG, createFooterUnmasked, colors=colors)
+env.Command(footerUnmaskedPNG, footerUnmaskedSVG, svg2PNG)
+
+for part, color in zip(parts, colors):
+  footerMaskPartSVG = os.path.join(
+      env["BUILD_DIR"].abspath, "footerMask{}.svg".format(part))
+  footerMaskPartPNG = os.path.join(
+      env["BUILD_DIR"].abspath, "footerMask{}.png".format(part))
+  footerPartPNG = os.path.join(
+      env["BUILD_DIR"].abspath, "footer{}.png".format(part))
+  env.Command(footerMaskPartSVG, footerSVG, createFooterMask, color=color)
+  env.Command(footerMaskPartPNG, footerMaskPartSVG, svg2PNG)
+  env.Command(footerPartPNG, [footerUnmaskedPNG, footerMaskPartPNG],
+      "convert $SOURCES -compose CopyOpacity -composite "
+      "-trim +repage $TARGET")
+  pdfs.append(footerPartPNG)
+
+Return("pdfs")

@@ -1,0 +1,2 @@
+*.bib diff=bib
+*.tex diff=tex

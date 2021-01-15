@@ -1,0 +1,110 @@
+import os
+import subprocess
+import sys
+
+Import("env")
+Import("Helper")
+env = env.Clone()
+
+# increase line length of LuaLaTeX error log lines by
+# setting environment variables
+env["ENV"]["max_print_line"] = "10000"
+env["ENV"]["error_line"] = "254"
+env["ENV"]["half_error_line"] = "238"
+
+# use LuaLaTeX as compiler (successor of PDFLaTeX)
+Helper.checkProgramInstalled(env, "lualatex", fail=True)
+# filter the output of LuaLaTeX with custom script
+env.Replace(PDFLATEX="python3 ../../tools/filterOutput.py lualatex")
+
+# show file and line number for errors
+env.Append(PDFLATEXFLAGS="--file-line-error")
+# enable SyncTeX for GUI editors
+env.Append(PDFLATEXFLAGS="--synctex=1")
+
+# don't call BibTeX on *.aux files of chapters
+env.Replace(BIBTEXCOM="")
+# quiet Biber output
+Helper.checkProgramInstalled(env, "biber", fail=True)
+env.Append(BIBERFLAGS="-q")
+
+# remove temporary files created accidential run of LuaLaTeX instead of SCons
+# (pressing the wrong button in TeXstudio)
+for path in os.listdir("."):
+  name, ext = os.path.splitext(path)
+  
+  if ext == ".tex":
+    for extension in ["acn", "aux", "bbl", "bcf", "blg", "glo", "ist", "loa",
+                      "lof", "log", "lop", "lot", "nlo", "out", "pdf",
+                      "run.xml", "synctex.gz", "thm", "toc", "uhy", "upa",
+                      "upb"]:
+      path2 = "{}.{}".format(name, extension)
+      if os.path.isfile(path2) and (not os.path.islink(path2)):
+        os.remove(path2)
+
+# set output directory
+env.Append(PDFLATEXFLAGS="--output-directory={}".format(env["BUILD_DIR"]))
+
+# create build/tex/document/ directory
+createDirs = (not env.GetOption("help")) and (not env.GetOption("clean"))
+if createDirs:
+  env.Execute(Mkdir(os.path.join(env["BUILD_DIR"].abspath, "document")))
+
+# compile PDF
+slidesPDF = env.PDF(
+    target=os.path.join(env["BUILD_DIR"].abspath, "defenseSlides.pdf"),
+    source="defense.tex")
+
+# compile handout
+def makeHandout(target, source, env):
+  with open(source[0].abspath, "r") as f: tex = f.read()
+  tex = "\\PassOptionsToClass{handout}{beamer}\n" + tex
+  with open(target[0].abspath, "w") as f: f.write(tex)
+
+handoutTex = env.Command(
+    os.path.join(env["BUILD_DIR"].abspath, "handout.tex"),
+    "defense.tex", makeHandout)
+handoutPDF = env.PDF(
+    target=os.path.join(env["BUILD_DIR"].abspath, "defenseHandout.pdf"),
+    source=handoutTex)
+
+# draft PDF: directly call LuaLaTeX without Biber
+# useful when working on the defense, making small changes,
+# then you don't want SCons to compile three times and have Biber and
+# whatnot ;)
+# (however, it does handle the gfx/ dependencies, so the graphics will
+# be regenerated if something changes in the graphics scripts)
+# call with `scons draft`
+draftEnv = env.Clone()
+draftEnv["ENV"]["TEXINPUTS"] = "{}:{}".format(
+    draftEnv["ENV"].get("TEXINPUTS", ""), Dir(".").abspath)
+draftPDF = draftEnv.Command(
+    os.path.join(env["BUILD_DIR"].abspath, "defense.pdf.draftTarget"),
+    "defense.tex",
+    "{} {} {}".format(env["PDFLATEX"], env["PDFLATEXFLAGS"], "defense.tex"),
+    chdir=env["BUILD_DIR"])
+
+# set mtime of output defense.pdf before mtime of input defense.tex
+# to force regeneration if called first with
+# `scons draft` and then with `scons` (otherwise Biber and glossary
+# generation might not be run despite needed)
+def makeDraftPDFOld(target, source, env):
+  tex, pdf = source[0].abspath, target[0].abspath
+  # strip ".draftTarget" extension
+  pdf = ".".join(pdf.split(".")[:-1])
+  stat = os.stat(tex)
+  aTimeNs, mTimeNs = stat.st_atime_ns, stat.st_mtime_ns
+  # set *.pdf mtime one second before *.tex mtime
+  aTimeNs -= 1000000000
+  mTimeNs -= 1000000000
+  os.utime(pdf, ns=(aTimeNs, mTimeNs))
+
+env.AddPostAction(draftPDF, makeDraftPDFOld)
+
+# return PDFs to let SConstruct manage dependencies
+pdfs = [slidesPDF, handoutPDF, draftPDF]
+
+# create draft alias
+env.Alias("draft", draftPDF)
+
+Return("pdfs")

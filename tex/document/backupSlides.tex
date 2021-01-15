@@ -1,0 +1,675 @@
+\section*{Backup Slides}
+
+
+
+\begin{frame}<handout:0>[noframenumbering]
+  \begin{overlay}
+    \sectionCircle
+  \end{overlay}
+\end{frame}
+
+
+
+\subsection*{Hierarchization on Full Grids}
+
+\begin{frame}{\insertsubsection}{Unidirectional Principle}
+  \begin{overlay}
+    \node[anchor=center] at (80,45) {%
+      \includegraphics<1|handout:0>{unidirectionalPrinciple_1}%
+      \includegraphics<2->{unidirectionalPrinciple_2}%
+    };
+    \node<3>[
+      anchor=center,
+      rotate=15,
+      text width=100mm,
+      align=center,
+    ] at (80,40) {%
+      \LARGE\contourlength{0.1em}%
+      \contour{white}{%
+        \textcolor{red}{\textbf{For spatially adaptive sparse grids:}}%
+      }\\%
+      \contour{white}{%
+        \textcolor{red}{\textbf{Works only for $p = 1$ (hat functions)!}}%
+      }%
+    };
+  \end{overlay}
+\end{frame}
+
+
+
+%\subsection*{Hierarchization on Dimensionally Adaptive Sparse Grids}
+%
+%\begin{frame}{\insertsubsection}{%
+%  Combination Technique%
+%}
+%  \begin{overlay}
+%    \node at (10,15) {%
+%      $
+%        \sgintp
+%        = \sum_{q=0}^{d-1}\; (-1)^q \binom{d-1}{q}
+%        \sum_{\normone{\*l'} = n-q}\!\! \fgintp{\*l'}
+%      $\\[0.5em]
+%      $d = 2$:\qquad
+%      $
+%        {}
+%        = \textcolor{C4!70!black}{
+%          \sum_{\normone{\*l'} = n} \fgintp{\*l'}
+%        } -
+%        \textcolor{C1!90!black}{
+%          \!\!\sum_{\normone{\*l'} = n-1}\!\! \fgintp{\*l'}
+%        }
+%      $%
+%    };
+%    \node at (80,12) {\includegraphics{sg_6}};
+%    \node at (40,49) {\includegraphics{sg_8}};
+%    \only<2-|handout:0>{
+%      \thesisCircle{80mm}{-45mm}{35mm}{100mm}{125mm}{70mm}{228}
+%      \thesisCircleCaption{80mm}{-45mm}{35mm}{140}{40}{%
+%        New formal combinatorial proof%
+%      }
+%    }
+%  \end{overlay}
+%\end{frame}
+
+
+
+\subsection*{Hierarchization on Dimensionally Adaptive Sparse Grids}
+
+\begin{frame}{\insertsubsection}{%
+  Combination Technique and a Combinatorial Proof%
+}
+  \begin{overlay}
+    \fill<1|handout:0>[anthrazit!20,rounded corners=2mm]
+        (-10,14) -- (-10,41) -- (86,41) -- (86,100) --
+        (170,100) -- (170,10) -- (86,10) -- (86,14) -- cycle;
+    \fill<2-3|handout:0>[anthrazit!20,rounded corners=2mm]
+        (-10,14) -- (-10,29) -- (86,29) -- (86,100) --
+        (170,100) -- (170,10) -- (86,10) -- (86,14) -- cycle;
+    \fill<4->[anthrazit!20,rounded corners=2mm]
+        (-10,66) -- (-10,100) -- (170,100) -- (170,10) --
+        (86,10) -- (86,66) -- cycle;
+    \node at (4,15) {%
+      $
+        \sgintp
+        = \sum_{q=0}^{d-1}\; (-1)^q \binom{d-1}{q}
+        \sum_{\normone{\*l'} = n-q}\!\! \fgintp{\*l'}
+      $\\[0.5em]
+      \only<1|handout:0>{%
+        $d = 2$:\qquad
+        $
+          {}
+          = \textcolor{C4!70!black}{
+            \sum_{\normone{\*l'} = n} \fgintp{\*l'}
+          } -
+          \textcolor{C1!90!black}{
+            \!\!\sum_{\normone{\*l'} = n-1}\!\! \fgintp{\*l'}
+          }
+        $%
+      }%
+    };
+    \uncover<2->{
+      \node at (4,50) {%
+        $
+          \sgintp(\gp{\*l,\*i})
+          \overset{!}{=}
+          {
+            \only<3->{\color{C3}}
+            \sum_{q=0}^{d-1}\; (-1)^q \binom{d-1}{q}
+            \sum_{\substack{\normone{\*l'} = n-q\\\*l' \ge \*l}}\!\!
+            \fgintp{\*l'}(\gp{\*l,\*i})
+          }
+        $\\
+        \qquad\qquad\quad
+        $
+          {} +
+          {
+            \only<3->{\color{C6}}
+            \sum_{q=0}^{d-1}\; (-1)^q \binom{d-1}{q}
+            \sum_{\substack{\normone{\*l'} = n-q\\\*l' \not\ge \*l}}\!\!
+            \fgintp{\*l'}(\gp{\*l,\*i})
+          }
+        $%
+      };
+      \node at (18,42) {\heading{Sketch of combinatorial proof:}};
+    }
+    \uncover<3->{
+      \node[rotate=-20] at (7,43) {%
+        \small\textcolor{C3}{$\fcnval{\*l,\*i} =$}%
+      };
+      \node[rotate=20] at (15,78) {%
+        \small\textcolor{C6}{$0 =$}%
+      };
+    }
+    \node at (88,12) {%
+      \includegraphics<1-3|handout:0>{sg_6}%
+      \includegraphics<4->{sg_7}%
+    };
+  \end{overlay}
+\end{frame}
+
+
+
+\begin{frame}{\insertsubsection}{Method of Residual Interpolation}
+  \begin{overlay}
+    \fill[anthrazit!20,rounded corners=3mm] (-10,12.5) rectangle (56,70);
+    \node[text width=50mm] at (3,13) {%
+      Save current surpluses $y^{(j)}_{\*l,\*i}$
+      and current residual $r^{(j)}(\gp{\*l,\*i})$
+      for each grid point $\gp{\*l,\*i}$.\\[0.5em]
+      For each active nodal subspace:
+      \begin{enumerate}
+        \item
+        Interpolate residuals on nodal subspace.
+        
+        \item
+        Evaluate interpolant at all points and subtract from
+        residuals $r^{(j)}(\gp{\*l,\*i})$.
+        
+        \item
+        Add surpluses to $y^{(j)}_{\*l,\*i}$.
+      \end{enumerate}%
+    };
+    \node[anchor=north east] at (158,12) {%
+      \includegraphics{residualInterpolation_1}%
+    };
+    \only<2-|handout:0>{
+      \thesisCircle{90mm}{-35mm}{25mm}{65mm}{65mm}{40mm}{87}
+      \thesisCircleCaption{90mm}{-35mm}{25mm}{132}{48}{%
+        Formal algorithm%
+      }
+    }
+    \only<3-|handout:0>{
+      \thesisCircle{130mm}{-55mm}{25mm}{70mm}{200mm}{40mm}{87}
+      \thesisCircleCaption{130mm}{-55mm}{25mm}{148}{32}{%
+        Formal proof (invariants)%
+      }
+    }
+  \end{overlay}
+\end{frame}
+
+
+
+\subsection*{Dynamic Portfolio Choice Models}
+
+\begin{frame}{\insertsubsection}{Bellman Equation}
+  \begin{overlay}
+    \node at (4,12) {\includegraphics{dynamicPortfolioChoiceBackup_1}};
+    
+    \newcommand*{\mylabels}{
+      \node[anchor=north,anthrazit!70] (labelValue) at (56,30) {%
+        \footnotesize{}Value function%
+      };
+      \node[anchor=north,anthrazit!70] (labelUtility) at (80,30) {%
+        \footnotesize{}Utility $\consume_t^{1-\riskav}/(1-\riskav)$%
+      };
+      \node[anchor=north,anthrazit!70] (labelConsumption) at (85.5,14) {%
+        \footnotesize{}Consumption%
+      };
+      \node[anchor=north,anthrazit!70] (labelPatience) at (104,17) {%
+        \footnotesize{}Patience factor%
+      };
+      \node[anchor=north,anthrazit!70] (labelTransition) at (138,30) {%
+        \footnotesize{}State transition function%
+      };
+      \draw[anthrazit!70] (labelValue) -- (56,26);
+      \draw[anthrazit!70] (labelUtility) -- (80,26);
+      \draw[anthrazit!70] (labelConsumption) -- (85.5,22);
+      \draw[anthrazit!70] (labelPatience) -- (104,22);
+      \draw[anthrazit!70] (labelTransition) -- (122,26);
+    }
+    
+    \uncover<2->{\only<1>{\mylabels}}
+    
+    \node[text width=101mm] at (55,10) {%
+      Time $t = 0, \dotsc, T$,
+      state $\state_t$,
+      policy $\policy_t$,
+      stochastic variables $\stochastic_t$\\[0.5em]
+      \heading{Bellman equation:}\\[0.2em]
+      $
+        \valuefun_t(\state_t)
+        = \max_{\policy_t}
+        \underbrace{
+          \left(
+            \utilityfun(\consume_t(\state_t, \policy_t)) +
+            \patience \expectation[t]{
+              \valuefun_{t+1}(\statefun_t(\state_t, \policy_t, \stochastic_t))
+            }
+          \right)
+        }_{\eqc\; \valueobjfun_t(\state_t, \policy_t)}
+      $%
+      %\policy_t \in \real^{m_{\policy}}\;\;\text{s.t.}\;\;
+      %\ineqconfun_t(\state_t, \policy_t) \le \*0,
+    };
+    
+    \only<2->{\mylabels}
+    
+    \guncover<3->{
+      \node[anchor=north east] at (59,46) {$t+1$:};
+      \node[anchor=north east] at (59,70) {$t$:};
+      
+      \begin{scope}[xshift=60mm,yshift=-35mm]
+        \node at (0,0) {\includegraphics{dynamicPortfolioChoiceBackup_2}};
+        
+        \node at (27,0) {%
+          \footnotesize{}$\valuefun_{t+1}(\state_{t+1}^{(1)})$%
+        };
+        \draw (26,3) -- (17.5,6.2);
+        
+        \draw (19.5,19) -- (19.5,20.5);
+        \draw (45.5,20) -- (45.5,21.5);
+        
+        \node[fill=C0,circle,text width=2mm] (newPoint) at (21,32) {};
+        \draw[->,densely dashed] (newPoint) to[out=135,in=225] (19,20);
+        \draw[->,densely dashed] (newPoint) to[out=90,in=200] (32,20.5);
+        \draw[->,densely dashed] (newPoint) to[out=45,in=250] (45,21);
+        
+        \draw[->] (80,21.25) -- (86,21.45);
+        \draw[->] (80,45.25) -- (86,45.45);
+        
+        \begin{scope}[cm={0.7,0.21,0,0.8,(0,0)}]
+          \contourlength{0.1em}
+          \node[transform shape,C0] at (4,9) {%
+            \contour{white}{$\valueobjfun_{t+1}(\state_{t+1}^{(1)}, {\cdot})$}%
+          };
+          \node[transform shape,C0] at (47,21.7) {%
+            \contour{white}{$\valueobjfun_{t+1}(\state_{t+1}^{(2)}, {\cdot})$}%
+          };
+          \node[transform shape,C0] at (90,34.4) {%
+            \contour{white}{$\valueobjfun_{t+1}(\state_{t+1}^{(3)}, {\cdot})$}%
+          };
+          \node[transform shape,C0] at (4,39) {%
+            \contour{white}{$\valueobjfun_t(\state_t^{(1)}, {\cdot})$}%
+          };
+          \node[transform shape,C0] at (47,51.7) {%
+            \contour{white}{$\valueobjfun_t(\state_t^{(2)}, {\cdot})$}%
+          };
+          \node[transform shape,C0] at (90,64.4) {%
+            \contour{white}{$\valueobjfun_t(\state_t^{(3)}, {\cdot})$}%
+          };
+          \node[transform shape] at (35,27) {$\policy_{t+1}$};
+          \node[transform shape] at (78,39.7) {$\policy_{t+1}$};
+          \node[transform shape] at (121,52.4) {$\policy_{t+1}$};
+          \node[transform shape] at (35,57) {$\policy_t$};
+          \node[transform shape] at (78,69.7) {$\policy_t$};
+          \node[transform shape] at (121,82.4) {$\policy_t$};
+          \draw[->] (34,24.5) -- (42,24.5);
+          \draw[->] (77,37.2) -- (85,37.2);
+          \draw[->] (120,49.9) -- (128,49.9);
+          \draw[->] (34,54.5) -- (42,54.5);
+          \draw[->] (77,67.2) -- (85,67.2);
+          \draw[->] (120,79.9) -- (128,79.9);
+        \end{scope}
+      \end{scope}
+    }
+  \end{overlay}
+\end{frame}
+
+
+
+\begin{frame}{\insertsubsection}{Numerical Aspects}
+  \begin{overlay}
+    \foreach \x in {0,...,8} {
+      \pgfmathtruncatemacro{\myslide}{\x+2}
+      \ifthenelse{\x=8}{
+        \tikzset{mystyle/.style={rounded corners=0.8mm}}
+      }{
+        \tikzset{mystyle/.style={}}
+      }
+      \fill<\myslide|handout:0>[anthrazit!20,rounded corners=3mm]
+          ($(-10,{22+5.85*\x})$) --
+          ($(80,{22+5.85*\x})$) --
+          (80,2) -- (170,2) -- (170,76) to[mystyle] (80,76) to[mystyle]
+          ($(80,{27.5+5.85*\x})$) --
+          ($(-10,{27.5+5.85*\x})$) -- cycle;
+    }
+    
+    \node at (3,14) {%
+      \scalebox{0.8}{%
+        $
+          \valuefun_t(\state_t)
+          = \max_{\policy_t}
+          \left(
+            \utilityfun(\consume_t(\state_t, \policy_t)) +
+            \patience \expectation[t]{
+              \valuefun_{t+1}(
+                \statefun_t(\state_t, \policy_t, \stochastic_t)
+              )
+            }
+          \right)
+        $%
+      }
+    };
+    
+    \node[text width=70mm] at (4,20) {%
+      \begin{itemize}
+        \only<2|handout:0>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<2|handout:0>{Interpolation (hierarchical B-splines)}
+        \only<2|handout:0>{\setbeamercolor{itemize item}{fg=black}}%
+        
+        \only<3|handout:0>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<3|handout:0>{Grid generation (spatially adaptive SG)}
+        \only<3|handout:0>{\setbeamercolor{itemize item}{fg=black}}%
+        
+        \only<4|handout:0>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<4|handout:0>{Gradient-based optimization}
+        \only<4|handout:0>{\setbeamercolor{itemize item}{fg=black}}%
+        
+        \only<5|handout:0>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<5|handout:0>{Certainty-equivalent transformation}
+        \only<5|handout:0>{\setbeamercolor{itemize item}{fg=black}}%
+        
+        \only<6|handout:0>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<6|handout:0>{Quadrature (SG quadrature rules)}
+        \only<6|handout:0>{\setbeamercolor{itemize item}{fg=black}}%
+        
+        \only<7|handout:0>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<7|handout:0>{Extrapolation schemes}
+        \only<7|handout:0>{\setbeamercolor{itemize item}{fg=black}}%
+        
+        \only<8|handout:0>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<8|handout:0>{State space cropping}
+        \only<8|handout:0>{\setbeamercolor{itemize item}{fg=black}}%
+        
+        \only<9|handout:0>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<9|handout:0>{Euler equation errors}
+        \only<9|handout:0>{\setbeamercolor{itemize item}{fg=black}}%
+        
+        \only<10>{\setbeamercolor{itemize item}{fg=red}}%
+        \item
+        \alert<10>{Monte Carlo simulation}
+        \only<10>{\setbeamercolor{itemize item}{fg=black}}%
+      \end{itemize}%
+    };
+    
+    \node<1|handout:0> at (74,25) {\scalebox{0.55}{\usebox{\mybox}}};
+    
+    \node<2|handout:0>[text width=55mm,anchor=center] at (120,39) {%
+      Sparse grid in state space\\[0.5em]
+      $\valuefun(\state_t^{(k)}) = \valueintp(\state_t^{(k)})$,\quad
+      $k = 1, \dotsc, \ngp_t$%
+    };
+    
+    \only<3|handout:0>{
+      \thesisCircle{120mm}{-39mm}{30mm}{80mm}{60mm}{45mm}{202}
+      \thesisCircleCaption{120mm}{-39mm}{30mm}{130}{50}{%
+        Refinement algorithm%
+      }
+    }
+    
+    \node<4|handout:0>[text width=65mm,anchor=center] at (120,39) {%
+      Computation of derivatives possible due to
+      higher-order B-splines\\[0.5em]
+      $
+        \partialderiv{\partialdiff{}\policyentry_{t,j}}{
+          \valueintp_t
+        }(\state_t, \policy_t)
+      $\\
+      $
+        {} = \utilityfun'(\consume_t(\state_t^{(k)}, \policy_t))
+        \partialderiv{\partialdiff{}\policyentry_{t,j}}{c_t}\paren{
+          \state_t^{(k)}, \policy_t
+        }
+      $\\
+      $
+        \quad {} + \patience \expectationsign[t]\bigg[
+          \tr{
+            \paren*{
+              \gradient{\state_{t+1}}{\valueintp_{t+1}}\paren{
+                \statefun_t(\state_t^{(k)}, \policy_t, \stochastic_t)
+              }
+            }
+          }
+      $\\
+      $
+          \qquad\qquad\;\; {} \cdot
+          \partialderiv{\partialdiff{}\policyentry_{t,j}}{\statefun_t}\paren{
+            \state_t^{(k)}, \policy_t, \stochastic_t
+          }
+        \bigg]
+      $%
+    };
+    
+    \node<5|handout:0>[text width=43mm,anchor=center] at (120,39) {%
+      Reducing the curvature of the objective function
+      to simplify optimization\\[0.5em]
+      $
+        \utilityfun(\consume_t)
+        \ceq \frac{\consume_t^{1-\riskav}}{1-\riskav}
+      $\\[0.5em]
+      $
+        \valueintp_t \mapsto \cetvalueintp_t
+        \ceq ((1 - \riskav) \valueintp_t)^{\frac{1}{1-\riskav}}
+      $%
+    };
+    
+    \node<6|handout:0>[text width=63mm,anchor=center] at (120,39) {%
+      Approximation of expected value\\[0.5em]
+      $
+      \expectation[t]{
+        \bigl(
+          \valuefun_{t+1}(
+            \statefun_t(\state_t^{(k)}, \policy_t, \stochastic_t)
+          )
+        \bigr)^{1-\riskav}
+      }
+      $\\
+      $
+        {} \approx \sum_{j=1}^{m_{\quadweight}} \quadweight_t^{(j)}
+        \bigl(
+          \valuefun_{t+1}(
+            \statefun_t(\state_t^{(k)}, \policy_t, \stochastic_t^{(j)})
+          )
+        \bigr)^{1-\riskav}
+      $%
+    };
+    
+    \node<7|handout:0>[text width=62mm,anchor=center] at (120,39) {%
+      If $\state_{t+1}$ is outside of $\clint{0, 1}^d$\\[0.5em]
+      $\valuefun_{t+1}(\state_{t+1})$\\[0.2em]
+      ${} \approx \valuefun_{t+1}(\state_{t+1}^\mathrm{in})$\\[0.2em]
+      $
+        \quad {} +
+        \tr{
+          (
+            \gradient{\state_{t+1}}{\valuefun_{t+1}}(
+              \state_{t+1}^\mathrm{in}
+            )
+          )
+        }
+        (\state_{t+1} - \state_{t+1}^\mathrm{in})
+      $\\[0.2em]
+      $
+        \quad {} +
+        \tr{(\state_{t+1} - \state_{t+1}^\mathrm{in})}
+        (
+          \hessian{\state_{t+1}}{\valuefun_{t+1}}(
+            \state_{t+1}^\mathrm{in}
+          )
+        )
+      $\\
+      $\qquad\; {} \cdot (\state_{t+1} - \state_{t+1}^\mathrm{in})$%
+    };
+    
+    \node<8|handout:0>[text width=60mm,anchor=center] at (120,39) {%
+      If constraints admit only some states of $\clint{0, 1}^d$\\[0.5em]
+      $\state \mapsto \state^{\mathrm{cropped}}$,
+      where $\state \notin \clint{0, 1}^d$, but
+      $\state^{\mathrm{cropped}} \in \clint{0, 1}^d$%
+    };
+    
+    \node<9|handout:0>[text width=50mm,anchor=center] at (120,39) {%
+      Violation of first-order KKT conditions\\[0.5em]
+      $\eulererror_t(\normstate_t)$\\
+      $
+      {} \ceq \Bigl|
+        1 - \Bigl(
+          \patience \bondreturn_t (\normconsume_t^{\opt,\sparse})^{\riskav}
+      $\\
+      $
+          \qquad {} \cdot \expectationsign[t]\Bigl[
+            \bigl(
+              \normcetvalueintp_t
+              - \tr{(\gradient{\normstate_t}{\normcetvalueintp_t})}
+              \normstatefun[\opt,\sparse]_t
+            \bigr)
+      $\\
+      $
+            \qquad\qquad {} \cdot \bigl(
+              \wealthratio_{t+1}^{\opt,\sparse}\;
+              \normcetvalueintp_t
+            \bigr)^{-\riskav}
+          \Bigr]
+        \Bigr)^{-1/\riskav}
+      \Bigr|
+      $%
+    };
+    
+    \node<10>[text width=65mm,anchor=center] at (120,39) {%
+      Average of multi-agent MC simulation\\[0.5em]
+      $
+        \optpolicymean_t
+        = \frac{1}{m_\mathrm{MC}} \sum_{j=1}^{m_\mathrm{MC}} \policy_{t,(j)},
+      $\\
+      $
+        \policy_{t,(j)}
+        \ceq \optpolicyfun_t(\state_{t,(j)}),
+      $\\
+      $
+        \state_{t,(j)}
+        \ceq \statefun_{t-1}(
+          \state_{t-1,(j)}, \policy_{t-1,(j)}, \stochastic_{t-1,(j)}
+        ),
+      $\\
+      $\state_{0,(j)} \sim P_{0,\state},$\\
+      $\stochastic_{t,(j)} \sim P_{t,\stochastic}$%
+    };
+  \end{overlay}
+  
+  \cite[in preparation]{Pflueger19Solving}
+\end{frame}
+
+\begin{frame}{\insertsubsection}{Complexity}
+  \begin{overlay}
+    \node[anchor=south west] at (36,75) {%
+      \includegraphics{financeRuntime_5}%
+    };
+    \node[anchor=south west] at (88,75) {%
+      \includegraphics{financeRuntime_6}%
+    };
+    \node at (42,9) {\includegraphics[scale=0.9]{financeRuntime_7}};
+    \node[circle,white,fill=mittelblau,inner sep=1mm] at (82,22) {%
+      $d = 3$%
+    };
+  \end{overlay}
+  
+  \cite[in preparation]{Pflueger19Solving}
+\end{frame}
+
+
+
+\subsection*{Comparison of Applications}
+
+\begin{frame}{\insertsubsection}
+  \begin{center}
+    \begin{tabular}{llll}
+      \toprule
+      \textbf{Category}&          \textbf{Topology opt.}& \textbf{Finance}& \textbf{Biomechanics}\\
+      \midrule
+      Interpolated quantities&    Elasticity tensors&     Value functions&  Muscle forces\\
+      SG dimensionality&          5&                      5&                2\\
+      \#Optimization variables&   \num{40000}&            11&               2\\
+      Time per evaluation&        \SI{30}{\second}&       ---&              \SI{30}{\minute}\\
+      \#Eval. per opt. iteration& \num{8000}&             150&              4\\
+      Objective function type&    Non-linear&             Non-linear&       Linear/non-linear\\
+      Constraint function type&   Non-linear&             Linear&           Non-linear/---\\
+      Optimization method&        SQP&                    SQP&              Augm. Lagrangian\\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+
+
+\subsection*{Recommendations and Limitations}
+
+\begin{frame}{\insertsubsection}{General Advice}
+  \begin{itemize}
+    \item
+    You must be able to sample $\objfun$ at arbitrary points
+    (a cloud of scattered point data does not suffice)
+    
+    \item
+    $\objfun$ must be defined on a hyper-rectangle $\clint{0, 1}^d$
+    
+    \item
+    $d$ should not be too large ($d \le 10$)
+    
+    \item
+    Kinks or other strong oscillations of $\objfun$ should be axis-aligned
+    for good refinement
+    
+    \item
+    Regions of interest should not be in the interior near the domain's corners
+    
+    \item
+    $\objfun$ should ``as smooth as possible'':
+    at least as smooth as the employed basis functions
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\insertsubsection}{Choice of Basis}
+  \begin{itemize}
+    \item
+    \emph{Not-a-knot B-splines:}
+    $\objfun$ with dominating near-polynomial parts
+    
+    \item
+    \emph{Fundamental splines:}
+    Accelerates hierarchization with BFS in quadratic time,
+    however might introduce slight oscillations, have global support
+    
+    \item
+    \emph{Weakly fundamental splines:}
+    Applicability of unidirectional principle in linear time,
+    however chain points have to exist (insert if necessary),
+    the more spatially adaptive a sparse grid is,
+    the more points have to be inserted
+  \end{itemize}
+\end{frame}
+
+
+
+\subsection*{Future Work}
+
+\begin{frame}{\insertsubsection}
+  \begin{itemize}
+    \item
+    Better/other refinement criteria
+    
+    \item
+    Refinement criteria that incorporates constraints if available
+    
+    \item
+    Other applications, e.g., with dimensional adaptivity
+    
+    \item
+    Apply new bases and algorithms to other settings than
+    interpolation/optimization, e.g., density estimation and regression
+    
+    \item
+    True $h$-$p$-adaptivity beyond choosing different degrees for different
+    dimensions
+    
+    \item
+    \dots
+  \end{itemize}
+\end{frame}

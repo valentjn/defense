@@ -1,0 +1,46 @@
+% set main document class
+\documentclass[
+  % set aspect ratio to 16:9 (for 1080p or similar)
+  aspectratio=169,
+  % set font size
+  11pt,
+  % compress navigation bar
+  compress,
+  % don't amssymb to prevent warnings with mathdesign
+  noamssymb,
+]{beamer}
+
+% include packages
+\input{preamble/packages}
+
+% set package options
+\input{preamble/settings}
+
+% define notation
+\input{preamble/notation}
+
+% select sections to include
+\includeonly{
+  document/10introduction,
+  document/20algorithms,
+  document/30applications,
+  document/40conclusion,
+  document/backupSlides,
+}
+
+\begin{document}
+  % title slide
+  \input{document/titleSlide}
+  
+  % acknowledgments
+  \input{document/acknowledgments}
+  
+  % sections
+  \include{document/10introduction}
+  \include{document/20algorithms}
+  \include{document/30applications}
+  \include{document/40conclusion}
+  
+  % backup slides
+  \include{document/backupSlides}
+\end{document}

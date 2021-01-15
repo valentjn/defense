@@ -1,0 +1,168 @@
+% helper macros
+\newcommand*{\ifempty}[2]{\if\relax\detokenize{#1}\relax#2\fi}
+\newcommand*{\ifnotempty}[2]{\if\relax\detokenize{#1}\relax\else#2\fi}
+\newcommand*{\appendwithcomma}[1]{\ifnotempty{#1}{,#1}}
+
+% defined terms
+\newcommand*{\term}[1]{\textcolor{mittelblau}{\emph{#1}}}
+\newcommand*{\heading}[1]{\textcolor{mittelblau}{\textbf{#1}}}
+
+% implying arrow
+\newcommand*{\follows}{\ensuremath{\rightsquigarrow}\xspace}
+
+% vectors
+\renewcommand*{\vec}[1]{{\boldsymbol{#1}}}
+\def\*#1{\vec{#1}}
+
+% matrices
+\newcommand*{\mat}[1]{{\boldsymbol{#1}}}
+
+% number sets
+\newcommand*{\real}{\mathbb{R}}
+
+% helper macros
+\newcommand*{\containsvector}[3]{%
+  \protect\IfSubStr{\detokenize{#1}}{\detokenize{\*}}{#2}{#3}%
+}
+
+% superscripts
+\newcommand*{\chol}{\mathrm{chol}}
+\newcommand*{\nak}{\mathrm{nak}}
+\newcommand*{\opt}{\mathrm{opt}}
+\newcommand*{\sparse}{\mathrm{s}}
+
+% L^p spaces
+\newcommand*{\Ltwo}{L^2}
+
+% delimiters
+\DeclarePairedDelimiter{\braced}{\{}{\}}
+\DeclarePairedDelimiter{\bracket}{[}{]}
+\DeclarePairedDelimiter{\paren}{(}{)}
+
+% operators
+\newcommand*{\abs}[1]{|#1|}
+\newcommand*{\convolution}{\ast}
+\newcommand*{\expectation}[2][]{\expectationsign[#1]\bracket*{#2}}
+\newcommand*{\expectationsign}[1][]{\mathbb{E}\ifnotempty{#1}{_{#1}}}
+\newcommand*{\norm}[2][]{\lVert#2\rVert_{#1}}
+\newcommand*{\norminfty}[1]{\norm[\infty]{#1}}
+\newcommand*{\normLtwo}[1]{\norm[\Ltwo]{#1}}
+\newcommand*{\normLtwoscaled}[1]{\normscaled[\Ltwo]{#1}}
+\newcommand*{\normone}[1]{\norm[1]{#1}}
+\newcommand*{\normscaled}[2][]{%
+  \left\lVert{#2}\right\rVert\ifnotempty{#1}{_{#1}}%
+}
+\newcommand*{\tr}[1]{#1^\mathrm{T}}
+\DeclareMathOperator*{\vecargmin}{\mathbf{arg\,min}}
+
+% relations
+\newcommand*{\ceq}{\coloneqq}
+\newcommand*{\eqc}{\eqqcolon}
+
+% functions
+\newcommand*{\basis}[1]{\varphi_{#1}}
+\newcommand*{\bspl}[2]{\varphi^{#1}_{#2}}
+\newcommand*{\cardbspl}[1]{b^{#1}}
+\newcommand*{\cetvalueintp}[1][]{\tilde{J}^{\sparse\ifnotempty{#1}{,#1}}}
+\newcommand*{\charfun}[1]{\chi_{#1}}
+\newcommand*{\cholfactor}[1][]{\mat{R}\ifnotempty{#1}{^{#1}}}
+\newcommand*{\cholfactorintp}[1][]{%
+  \cholfactor[\sparse\appendwithcomma{#1}]%
+}
+\newcommand*{\compliance}[1][]{J\ifnotempty{#1}{^{#1}}}
+\newcommand*{\complianceintp}[1][]{\compliance[\sparse\appendwithcomma{#1}]}
+\newcommand*{\displacement}{\*u}
+\newcommand*{\densglobal}{\tilde{\varrho}}
+\newcommand*{\etensor}[1][]{\mat{E}\ifnotempty{#1}{^{#1}}}
+\newcommand*{\etensorchol}[1][]{\mat{E}^{\chol\appendwithcomma{#1}}}
+\newcommand*{\etensorcholintp}[1][]{%
+  \etensorchol[\sparse\appendwithcomma{#1}]%
+}
+\newcommand*{\etensorintp}[1][]{%
+  \etensor[\sparse\appendwithcomma{#1}]%
+}
+\newcommand*{\eulererror}{\error^{\mathrm{Eu}}}
+\newcommand*{\fgintp}[1]{f_{#1}}
+\newcommand*{\normcetvaluefun}[1][]{\hat{\tilde{J}}^{\ifnotempty{#1}{,#1}}}
+\newcommand*{\normcetvalueintp}[1][]{%
+  \hat{\tilde{J}}^{\sparse\ifnotempty{#1}{,#1}}%
+}
+\newcommand*{\normstatefun}[1][]{%
+  \hat{\*\psi}\ifnotempty{#1}{^{\raisebox{-0.5em}{\scriptsize$#1$}}}%
+}
+\newcommand*{\objfun}{f}
+\newcommand*{\optpolicyfun}{\policy^\opt}
+\newcommand*{\sgintp}{f^\sparse}
+\newcommand*{\statefun}{\*\psi}
+\newcommand*{\utilityfun}{u}
+\newcommand*{\valuefun}{J}
+\newcommand*{\valueintp}[1][]{J^{\sparse\ifnotempty{#1}{,#1}}}
+\newcommand*{\valueobjfun}{\tilde{J}}
+\newcommand*{\weightedeulererror}{\error^{\mathrm{w},\mathrm{Eu}}}
+\newcommand*{\weightedeulererrorLtwo}{\error^{\mathrm{w},\mathrm{Eu},\Ltwo}}
+
+% scalars
+\newcommand*{\bond}{b}
+\newcommand*{\bondreturn}{r}
+\newcommand*{\consume}{c}
+\newcommand*{\densub}{\varrho^\ast}
+\newcommand*{\error}{\varepsilon}
+\newcommand*{\fcnval}[2][]{f\ifnotempty{#1}{^{#1}}(\gp{#2})}
+\newcommand*{\kronecker}[2]{\delta_{#1,#2}}
+\newcommand*{\ngp}{N}
+\newcommand*{\normbond}{\hat{b}}
+\newcommand*{\normbuy}[1][]{\hat{\delta}^{+\appendwithcomma{#1}}}
+\newcommand*{\normconsume}{\hat{c}}
+\newcommand*{\normsell}[1][]{\hat{\delta}^{-\appendwithcomma{#1}}}
+\newcommand*{\patience}{\varrho}
+\newcommand*{\policyentry}{y}
+\newcommand*{\quadweight}{\zeta}
+\newcommand*{\riskav}{\gamma}
+\newcommand*{\stock}{s}
+\newcommand*{\stockreturn}{\lambda}
+\newcommand*{\vol}[1]{\mathrm{vol}(#1)}
+\newcommand*{\voldens}[2]{\mathrm{vol}_{#1}(#2)}
+\newcommand*{\wealth}{w}
+\newcommand*{\wealthratio}{\eta}
+
+% vectors and vector entries
+\newcommand*{\chain}[2][\*k]{#1^{(#2)}}
+\newcommand*{\force}{\*F}
+\newcommand*{\gp}[1]{\containsvector{#1}{\*x}{x}_{#1}}
+\newcommand*{\normstate}{\hat{\*x}}
+\newcommand*{\optpolicymean}{\bar{\policy}^\opt}
+\newcommand*{\policy}{\*y}
+\newcommand*{\state}{\*x}
+\newcommand*{\stochastic}{\*\omega}
+\newcommand*{\surplus}[1]{\alpha_{#1}}
+\newcommand*{\vfcnval}[1][]{\*f\ifnotempty{#1}{^{#1}}}
+\newcommand*{\vstock}{\*s}
+\newcommand*{\vsurplus}{\*\alpha}
+\newcommand*{\xopt}{\*x^\opt}
+
+% matrices
+\newcommand*{\intpmat}{\mat{A}}
+\newcommand*{\intpmatinv}{\intpmat^{-1}}
+
+% sets
+\newcommand*{\clint}[1]{\mathopen[#1\mathclose]}
+\newcommand*{\hiset}[1]{I_{#1}}
+\newcommand*{\hopint}[1]{\mathopen[#1\mathclose[}
+\newcommand*{\liset}{K}
+\newcommand*{\objdomain}{\tilde{\Omega}}
+\newcommand*{\rspldomain}[2]{D_{#1}^{#2}}
+
+% spaces
+\newcommand*{\Cp}[1]{\mathcal{C}^{#1}}
+\newcommand*{\ns}[1]{V_{#1}}
+
+% differentials and derivatives
+\newcommand*{\diff}{\mathop{}\!\mathrm{d}}
+\newcommand*{\dx}{\diff{}x}
+\newcommand*{\dy}{\diff{}y}
+\newcommand*{\gradient}[2]{\mathop{\*\nabla_{\hspace*{-0.1em}#1}} #2}
+\newcommand*{\hessian}[2]{\mathop{\*\nabla_{\hspace*{-0.1em}#1}^2} #2}
+\newcommand*{\partialderiv}[3][]{%
+  \frac{\partialdiff\ifnotempty{#1}{^{#1}}}{#2} #3%
+}
+\newcommand*{\partialdiff}{\mathop{}\!\partial}

@@ -1,0 +1,804 @@
+\section{Real-World Applications}
+
+
+
+\begin{frame}<handout:0>[noframenumbering]
+  \begin{overlay}
+    \sectionCircle
+    \subsectionCircle{50}{60}{Topology\\Optimization}{1}
+    \subsectionCircle{110}{60}{Dynamic Portfolio\\Choice Models}{0}
+  \end{overlay}
+\end{frame}
+
+
+
+\subsection{Topology Optimization}
+
+\begin{frame}{\insertsubsection}{Homogenization and Two-Scale Approach}
+  \begin{overlay}
+    \node[anchor=south] at (13,72) {\includegraphics{microCell_1}};
+    \node[anchor=south] at (36,72) {\includegraphics{microCell_3}};
+    \node[anchor=south] at (60,72) {\includegraphics{microCell_2}};
+    \node[anchor=south] at (85,72) {\includegraphics{microCell_4}};
+    \node[anchor=south] at (112,76) {\includegraphics{microCell_13}};
+    \node[anchor=south] at (142,76) {\includegraphics{microCell_14}};
+    {
+      \transparent{\uncoveralpha}
+      \fill<1-2|handout:0>[white] (-10,45) rectangle (170,84);
+    }
+    \node[text width=50mm] at (4,15) {%
+      \hspace{15mm}
+      $
+        \min_{\densglobal\colon \objdomain \to \clint{0, 1}}\,
+        \compliance(\densglobal)
+      $\\[0.5em]
+      with
+      $
+        \compliance(\densglobal)
+        \ceq \int_{\objdomain} \tr{\force}
+        \displacement_{\densglobal}(\tilde{\*x}) \diff\tilde{\*x}
+      $\\[0.5em]
+      s.t.
+      $
+        \frac{
+          \int_{\objdomain} \densglobal(\tilde{\*x}) \diff\tilde{\*x}
+        }{
+          \vol{\objdomain}
+        }
+        \le \densub
+      $%
+    };
+    \node<2-> at (54.4,12.2) {\includegraphics{twoScale_1}};
+    \node<1|handout:0> at (53,16) {\includegraphics{topoOptExample_1}};
+    {
+      \transparent{0.15}
+      \node<2-> at (53,16) {\includegraphics{topoOptExample_2}};
+    }
+    \uncover<3->{
+      \node[anchor=north,align=center] at (13,72.5) {%
+        Cross\vphantom{hd}\\[-0.3em]
+        ($d = 2$)%
+      };
+      \node[anchor=north,align=center] at (36,72.5) {%
+        Framed cross\vphantom{hd}\\[-0.3em]
+        ($d = 4$)%
+      };
+      \node[anchor=north,align=center] at (62,72.5) {%
+        Sheared cross\vphantom{hd}\\[-0.3em]
+        ($d = 3$)%
+      };
+      \node[anchor=north,align=center] at (87,72.5) {%
+        SF cross\vphantom{hd}\\[-0.3em]
+        ($d = 5$)%
+      };
+      \node[anchor=north,align=center] at (112,76.5) {%
+        3D cross\vphantom{hd}\\[-0.3em]
+        ($d = 3$)%
+      };
+      \node[anchor=north,align=center] at (140,76.5) {%
+        3D sheared cross\vphantom{hd}\\[-0.3em]
+        ($d = 5$)%
+      };
+    }
+  \end{overlay}
+\end{frame}
+
+
+
+\begin{frame}{\insertsubsection}{Cholesky Factor Interpolation}
+  \begin{overlay}
+    \tikzset{
+      myCircle/.style={
+        circle,
+        white,
+        fill=mittelblau,
+        anchor=west,
+        inner sep=1mm,
+        minimum size=10mm,
+      },
+    }
+    
+    \fill[anthrazit!20,rounded corners=3mm] (-10,18) rectangle (92,44);
+    \node at (3.5,20) {%
+      \heading{Offline phase (generation of interpolant):}%
+    };
+    \node[anchor=center] (offline1) at (13,34) {%
+      \includegraphics{topoOptOfflineOnline_1}%
+    };
+    \node[anchor=center] (offline2) at (38,34) {%
+      \includegraphics{topoOptOfflineOnline_2}%
+    };
+    \node<4->[anchor=center] (offline3) at (63,34) {%
+      \includegraphics{topoOptOfflineOnline_3}%
+    };
+    \node[myCircle] (offline4) at (79,34) {%
+      \alt<1-3|handout:0>{$\etensorintp$}{$\cholfactorintp$}%
+    };
+    \draw[->] (offline1) -- (offline2);
+    \alt<1-3|handout:0>{
+      \draw[->] (offline2) -- (offline4);
+    }{
+      \draw[->] (offline2) -- (offline3);
+      \draw[->] (offline3) -- (offline4);
+    }
+    
+    \fill[anthrazit!20,rounded corners=3mm] (-10,48) rectangle (92,76);
+    \node at (3.5,50) {%
+      \heading{Online phase (one iteration of optimizer):}%
+    };
+    \node[anchor=center] (online1) at (13,65) {%
+      \includegraphics{topoOptOfflineOnline_4}%
+    };
+    \node<4->[anchor=center] (online2) at (38,65) {%
+      \includegraphics{topoOptOfflineOnline_6}%
+    };
+    \node[anchor=center] (online3) at (63,65) {%
+      \includegraphics<1-3|handout:0>{topoOptOfflineOnline_5}%
+      \includegraphics<4->{topoOptOfflineOnline_7}%
+    };
+    \node[myCircle] (online4) at (79,65) {$\complianceintp$};
+    \alt<1-3|handout:0>{
+      \draw[->] (online1) -- (online3);
+    }{
+      \draw[->] (online1) -- (online2);
+      \draw[->] (online2) -- (online3);
+    }
+    \draw[->] (online3) -- (online4);
+    
+    \uncover<2->{
+      \node[anchor=north] at (124,2) {%
+        \small%
+        Minimal eigenvalue of
+        \alt<1-3>{$\etensorintp$}{$\etensorcholintp$}%
+        \vphantom{$\etensorcholintp$}%
+      };
+    }
+    \node at (94,6) {%
+      \guncover<2->{\includegraphics<1-3|handout:0>{cholesky_1}}%
+      \includegraphics<4->{cholesky_2}\;\;%
+      \guncover<2->{\raisebox{2mm}{\includegraphics{cholesky_3}}}%
+    };
+    \uncover<3->{
+      \node at (100,58) {%
+        \heading{Cholesky factorization:}\\
+        %$
+        %  \etensorcholintp(\*x)
+        %  \ceq \tr{\cholfactorintp(\*x)} \cholfactorintp(\*x)
+        %$%
+        $\etensor(\*x) = \tr{\cholfactor(\*x)} \cholfactor(\*x)$%
+      };
+      \node at (100,70) {%
+        %$
+        %  \partialderiv{\partialdiff{} x_t}{\etensorcholintp}(\*x)
+        %  = \tr{\cholfactorintp(\*x)} \cdot
+        %  \partialderiv{\partialdiff{} x_t}{\cholfactorintp}(\*x) +
+        %  \tr{\partialderiv{\partialdiff{} x_t}{\cholfactorintp}(\*x)} \cdot
+        %  \cholfactorintp(\*x)
+        %$%
+        $
+          \partialderiv{\partialdiff{} x_t}{\etensor}
+          = \tr{\cholfactor} \cdot
+          \partialderiv{\partialdiff{} x_t}{\cholfactor} +
+          \tr{\partialderiv{\partialdiff{} x_t}{\cholfactor}} \cdot
+          \cholfactor
+        $%
+      };
+    }
+    
+    %\only<5->{
+    %  \thesisCircle{52.5mm}{-42.912mm}{35mm}{60mm}{70mm}{49mm}{167}
+    %  \thesisCircleCaption{52.5mm}{-42.912mm}{35mm}{127}{53}{%
+    %    Error without Cholesky%
+    %  }
+    %  \thesisCircle{107.5mm}{-42.912mm}{35mm}{137mm}{70mm}{49mm}{167}
+    %  \thesisCircleCaption{107.5mm}{-42.912mm}{35mm}{122}{58}{%
+    %    Error with Cholesky%
+    %  }
+    %}
+  \end{overlay}
+  
+  \cite[in prepar.]{Valentin19Gradient}
+\end{frame}
+
+
+
+\begin{frame}{\insertsubsection}{Numerical Results}
+  \begin{overlay}
+    %\node at (57,3.5) {\heading{\footnotesize{}Numerical Results}};
+    
+    \node[anchor=north,text width=60mm,align=center] at (44,9) {%
+      Spectral error\\%
+      {%
+        \small%
+        $
+          \norm[2]{
+            \etensor(\*x) -
+            \alt<1>{\etensorintp}{\etensorcholintp}(\*x)
+            \vphantom{\etensorcholintp}
+          }
+        $%
+      }%
+    };
+    \node at (23,21) {\includegraphics{topoOptInterpolationPointwise_3}};
+    \node at (18,31) {%
+      \includegraphics<1|handout:0>{topoOptInterpolationPointwise_1}%
+      \includegraphics<2->{topoOptInterpolationPointwise_2}%
+    };
+    
+    \guncover<3->{
+      \node[anchor=north,text width=60mm,align=center] at (110,9) {%
+        Relative spectral error\\
+        {%
+          \small%
+          $
+            \error^{\chol,\sparse} :=
+            \frac{
+              \normLtwoscaled{
+                \vphantom{\big(}
+                \norm[2]{\etensor({\cdot}) - \etensorcholintp({\cdot})}
+              }
+            }{
+              \normLtwoscaled{
+                \vphantom{\big(}
+                \norm[2]{\etensor({\cdot})}
+              }
+            }
+          $%
+        }%
+      };
+      \node at (74,27) {\includegraphics{topoOptInterpolation_1}};
+    }
+    
+    %\guncover<4->{
+    %  \node[anchor=north,text width=60mm,align=center] at (128,9) {%
+    %    Optimality-interpolation gap%
+    %  };
+    %  \node at (102,27) {\includegraphics{topoOptOptimalityGap_1}};
+    %}
+    %\node at (112,15) {\includegraphics{topoOptOptimalityGap_3}};
+    %{
+    %  \transparent{\uncoveralpha}
+    %  \fill<1-3|handout:0>[white] (111,14) rectangle (170,26);
+    %}
+  \end{overlay}
+  
+  \cite[in prepar.]{Valentin19Gradient}
+\end{frame}
+
+
+
+\begin{frame}{\insertsubsection}{%
+  Optimal Structures and Compliance Values (Lower is Better)%
+}
+  \begin{overlay}
+    \node<1-2|handout:0> at (4,17) {%
+      \includegraphics<1>{topoOptStructure2D_1}%
+      %\includegraphics<2>{topoOptStructure2D_3}%
+      \includegraphics<2>{topoOptStructure2D_5}%
+      %\includegraphics<4>{topoOptStructure2D_7}%
+    };
+    \node<1-2|handout:0>[text width=70mm] at (6,58) {%
+      {%
+        \only<2->{\includegraphics{microCell_5}}%
+        \only<1>{\includegraphics{microCell_9}}\hspace{0.41em}%
+        \alert<1>{\raisebox{0.7em}{ 74.974}}\qquad%
+        \only<1,3->{\includegraphics{microCell_6}}%
+        \only<2>{\includegraphics{microCell_10}}%
+        \alert<2>{\raisebox{0.7em}{ 67.809}}\\[0.2em]%
+        \includegraphics{microCell_7}\hspace{0.41em}%
+        \raisebox{0.7em}{ 70.816}\qquad%
+        \includegraphics{microCell_8}%
+        \raisebox{0.7em}{ 68.602}%
+      }%
+    };
+    
+    \node<1-2|handout:0> at (90,15) {%
+      \includegraphics<1>{topoOptStructure2D_2}%
+      %\includegraphics<2>{topoOptStructure2D_4}%
+      \includegraphics<2>{topoOptStructure2D_6}%
+      %\includegraphics<4>{topoOptStructure2D_8}%
+    };
+    \node<1-2|handout:0>[text width=30mm] at (125,10) {%
+      {%
+        \hspace{0.27em}%
+        \only<2->{\includegraphics{microCell_5}}%
+        \only<1>{\includegraphics{microCell_9}}\hspace{0.41em}%
+        \alert<1>{\raisebox{0.7em}{ 183.68}}\\[0.2em]%
+        \only<1,3->{\includegraphics{microCell_6}}%
+        \only<2>{\includegraphics{microCell_10}}%
+        \alert<2>{\raisebox{0.7em}{ 169.60}}\\[0.2em]%
+        \hspace{0.27em}%
+        \includegraphics{microCell_7}\hspace{0.41em}%
+        \raisebox{0.7em}{ 177.51}\\[0.2em]%
+        \includegraphics{microCell_8}%
+        \alert<4>{\raisebox{0.7em}{ 174.55}}%
+      }%
+    };
+    
+    \node<3->[anchor=center] at (32,47) {%
+      \includegraphics<3|handout:0>[scale=0.16]{topoOptStructure658}%
+      \includegraphics<4->[scale=0.16]{topoOptStructure660}%
+    };
+    \node<3->[text width=30mm] at (45,15) {%
+      {%
+        \only<1-2,4->{\includegraphics{microCell_15}}%
+        \only<3|handout:0>{\includegraphics{microCell_17}}\hspace{0.25em}%
+        \alert<3|handout:0>{\raisebox{1.5em}{ 247.60}}\\[0.0em]%
+        \only<1-3|handout:0>{\includegraphics{microCell_16}}%
+        \only<4>{\includegraphics{microCell_18}}%
+        \alert<4>{\raisebox{1.5em}{\,162.59}}%
+      }%
+    };
+    
+    \node<3->[anchor=center] at (115,52) {%
+      \includegraphics<3|handout:0>[scale=0.16]{topoOptStructure659}%
+      \includegraphics<4->[scale=0.16]{topoOptStructure661}%
+    };
+    \node<3->[text width=30mm] at (130,2) {%
+      {%
+        \only<1-2,4->{\includegraphics{microCell_15}}%
+        \only<3|handout:0>{\includegraphics{microCell_17}}\hspace{0.25em}%
+        \alert<3|handout:0>{\raisebox{1.5em}{ 169.27}}\\[0.0em]%
+        \only<1-3>{\includegraphics{microCell_16}}%
+        \only<4>{\includegraphics{microCell_18}}%
+        \alert<4>{\raisebox{1.5em}{\,46.171}}%
+      }%
+    };
+  \end{overlay}
+  
+  \cite[in prepar.]{Valentin19Gradient}
+\end{frame}
+
+
+
+\begin{frame}<handout:0>[noframenumbering]
+  \begin{overlay}
+    \sectionCircle
+    \subsectionCircle{50}{60}{Topology\\Optimization}{0}
+    \subsectionCircle{110}{60}{Dynamic Portfolio\\Choice Models}{1}
+  \end{overlay}
+\end{frame}
+
+
+
+\subsection{Dynamic Portfolio Choice Models}
+
+\begin{frame}{\insertsection}{Introduction}
+  \begin{overlay}
+    \node[text width=120mm] at (2,13) {%
+      \begin{itemize}
+        \item
+        How should individuals invest their money over their life span?
+        
+        \item
+        Consume all money that is not invested (\follows consumption $c_t$)
+        
+        \item
+        Goal: Maximize total discounted utility!
+      \end{itemize}%
+    };
+    
+    \node at (10,36) {%
+      \only<1-2,5->{\includegraphics{dynamicPortfolioChoice_1}}%
+      \only<3>{\includegraphics{dynamicPortfolioChoice_2}}%
+      \only<4>{\includegraphics{dynamicPortfolioChoice_3}}%
+    };
+    
+    \uncover<2->{
+      \node[text width=52mm] at (99,30) {%
+        \begin{equation*}
+          \max \sum_{t=0}^T \riskav^t
+           \expectation[t]{
+            \utilityfun(
+              \consume_t(
+                \alert<3>{\state_t},
+                \alert<4>{\policy_t},
+                \alert<5>{\stochastic_t}
+              )
+            )
+          }
+        \end{equation*}
+        
+        \vspace*{-0.5em}
+        
+        \begin{equation*}
+          u(c_t)
+          = \frac{c_t^{1 - \riskav}}{1 - \riskav}
+          = \raisebox{-0.5\height+0.4em}{
+            \tikz{
+              \begin{axis}[
+                domain=1:4,
+                width=23mm,
+                height=23mm,
+                ticks=none,
+                axis lines=left
+              ]
+                \addplot[smooth,samples=200,black]{x^(1-3.5)/(1-3.5)};
+              \end{axis}
+            }
+          }
+        \end{equation*}
+        
+        \vspace*{-0.3em}
+        
+        \begin{itemize}
+          \itemsep=0em
+          \item
+          State variables \alert<3>{$\state_t$}
+          %Cannot be directly influenced (wealth, income, etc.)
+          
+          \item
+          Policy variables \alert<4>{$\policy_t$}
+          %Investment decisions in time $t$
+          
+          \item
+          Stochastic variables \alert<5>{$\stochastic_t$}
+          %Random influence on stock market
+          %Patience $\patience < 1$ ($\patience = 0.97$),\\
+          %risk aversion $\riskav > 1$ ($\riskav = 3.5$)
+        \end{itemize}
+      };
+    }
+  \end{overlay}
+\end{frame}
+
+
+
+{%
+  \newcommand*{\getscale}{
+    \pgfgettransformentries{%
+      \myxscaletmp%
+    }{\@tempa}{\@tempa}{\myyscaletmp}{\@tempa}{\@tempa}
+    \gdef\myxscale{\myxscaletmp}
+  }%
+  \newcommand*{\drawcircle}[2][]{
+    \node[
+      circle,minimum size=60mm,fill=mittelblau!#2,draw=mittelblau,
+    ] at (0mm,0mm) (myCircle#2) {};
+    \IfStrEq{#1}{noArrow}{}{
+      \getscale
+      \pgfmathparse{150+20/\myxscale^0.8}
+      \let\myin\pgfmathresult
+      \draw[->] (myCircle#2) to[
+        out=150,in=\myin,looseness=2.3,
+      ] node[below,scale=1/\myxscale] {\mytext} (myCircle#2);
+    }
+  }%
+  \newcommand*{\drawtext}[1]{
+    \getscale
+    \centerarc[
+      draw=none,postaction={decorate},decoration={
+        text along path,
+        text={#1},
+        text align=center
+      },
+    ](0mm,0mm)(180:0:30mm-1em/\myxscale);
+  }%
+  \newenvironment*{circlescope}{
+    \getscale
+    %\begin{scope}[scale=0.8,shift={(5mm,-5mm)},transform shape]
+    \begin{scope}[
+      scale=1-0.15/\myxscale,
+      shift={(3mm/\myxscale,-3mm/\myxscale)},
+      transform shape,
+    ]
+  }{
+    \end{scope}
+  }%
+  \newsavebox{\mybox}%
+  \sbox{\mybox}{%
+    \begin{tikzpicture}
+      \draw[dashed] (0mm,9mm) -- (84mm,9mm);
+      \draw[dashed] (-4.3mm,-8mm) -- (71.2mm,-48.2mm);
+      \begin{scope}[rotate=-130]
+        \node[
+          circle,
+          minimum size=18mm,
+          fill=mittelblau!30,
+          draw=mittelblau,
+          inner sep=0mm,
+        ] at (0mm,0mm) (optimize) {\texttt{optimize}};
+        \begin{scope}[
+          shift={(40mm/2,40mm*sin(60))},
+          transform shape,
+        ]
+          \begin{scope}[
+            rotate=130,
+            scale=18mm/60mm+0.15,
+            transform shape,
+          ]
+            \getscale
+            \drawcircle[noArrow]{30}
+            \drawtext{|\ttfamily|refine}
+            \begin{scope}[
+              scale=1-0.15/\myxscale,
+              shift={(3mm/\myxscale,-3mm/\myxscale)},
+              transform shape,
+            ]
+              \def\mytext{}
+              \drawcircle{50}
+              \getscale
+              \node[scale=1/\myxscale] at (0mm,0mm) {\texttt{optimize}};
+            \end{scope}
+          \end{scope}
+        \end{scope}
+        \node[
+          circle,
+          minimum size=18mm,
+          fill=mittelblau!30,
+          draw=mittelblau,
+          inner sep=0mm,
+          text width=15mm,
+          align=center,
+        ] at (40mm,0mm) (interpolate) {\ttfamily{}inter-\\polate};
+        \draw[->] (optimize) to[
+          bend left=30,
+        ] (myCircle30);
+        \draw[->] (myCircle30) to[
+          bend left=30,
+        ] (interpolate);
+        \draw[->] (interpolate) to[
+          bend left=30,
+        ] node[above,rotate=50] {$t \gets (t - 1)$} (optimize);
+      \end{scope}
+      \begin{scope}[shift={(84mm,-21mm)}]
+        \drawcircle[noArrow]{20}
+        \drawtext{|\ttfamily|optimize}
+        \begin{circlescope}
+          \def\mytext{\hspace*{5mm}$\state_t$}
+          \drawcircle{30}
+          \drawtext{|\ttfamily|optimizeSinglePoint}
+          \begin{circlescope}
+            \def\mytext{\hspace*{5mm}$\policy_t$}
+            \drawcircle{40}
+            \drawtext{|\ttfamily|evalObjfunGrad}
+            \begin{circlescope}
+              \def\mytext{\hspace*{5mm}$\stochastic_t$}
+              \drawcircle{50}
+              \drawtext{|\ttfamily|evalQuadPoint}
+              \begin{circlescope}
+                \def\mytext{\hspace*{4mm}$o$}
+                \drawcircle{60}
+                \getscale
+                \node[
+                  text width=30mm,align=center,scale=1/\myxscale,
+                ] at (0mm,0mm) {%
+                  \ttfamily{}evalInterp-\\PartDeriv%
+                };
+              \end{circlescope}
+            \end{circlescope}
+          \end{circlescope}
+        \end{circlescope}
+      \end{scope}
+    \end{tikzpicture}%
+  }
+  
+  \newcommand*{\mystate}{
+    \only<1>{\state_t^{\phantom{(k)}}}
+    \only<2->{\alert<2>{\state_t^{(k)}}}
+  }%
+  \newcommand*{\myvaluefun}[1]{
+    \only<1-2>{\valuefun_{#1}^{\phantom{\sparse}}}
+    \only<3->{\alert<3>{\valueintp_{#1}}}
+  }%
+  \begin{frame}{\insertsubsection}{Bellman Equation}
+    \begin{overlay}
+      \node[anchor=north] at (80,16) {%
+        $
+          \myvaluefun{t}(\mystate)
+          = \alert<4>{\max}_{\policy_t}
+          \;\biggl(\!
+            \utilityfun(\consume_t(\mystate, \policy_t)) +
+            \patience \expectationsign[t]\bigl[
+              \myvaluefun{t+1}(
+                \;\underbrace{
+                  \statefun_t(\mystate, \policy_t, \stochastic_t)
+                }_{
+                  \mathclap{\text{$\state_{t+1}$ (state transition)}}%
+                }\;
+              )
+            \bigr]
+          \biggr)
+        $%
+      };
+      
+      \node[anchor=north] at (80,35) {\scalebox{0.6}{\usebox{\mybox}}};
+      
+      \node<5>[
+        circle,
+        white,
+        fill=mittelblau,
+        anchor=center,
+        text width=42mm,
+      ] at (80,42) {%
+        \vspace{-1em}%
+        \begin{itemize}
+          \setbeamercolor{itemize item}{fg=white}%
+          \item
+          Interpolation
+          
+          \item
+          Spatial adaptivity
+          
+          \item
+          Gradient-based opt.
+          
+          \item
+          CE transformation
+          
+          \item
+          SG quadrature
+          
+          \item
+          Extrapolation schemes
+          
+          \item
+          State space cropping
+          
+          \item
+          Euler equation errors
+          
+          \item
+          Monte Carlo sim.
+        \end{itemize}%
+      };
+    \end{overlay}
+    
+    \cite[in preparation]{Pflueger19Solving}
+  \end{frame}%
+}
+
+
+
+\begin{frame}{\insertsubsection}{Interpolation and Euler Error}
+  \begin{overlay}
+    \fill[mittelblau,rounded corners=3mm] (101,-10) rectangle (170,38);
+    
+    \node[white,text width=57mm] at (103,2) {%
+      \textbf{Transaction costs problem:}\vspace{-0.2em}
+      \begin{itemize}
+        \setbeamercolor{itemize item}{fg=white}
+        \item
+        $d$ state variables\\
+        (stock fractions $\stock_{t,j}$)
+        
+        \item
+        $2d+1$ policy variables\\
+        (bonds $\normbond_t$, buys $\normbuy_{t,j}$,
+        sells $\normsell_{t,j}$)
+        
+        \item
+        $d$ stochastic variables\\
+        (stock return rates $\stockreturn_{t,j}$)
+      \end{itemize}%
+    };
+    
+    %\node<1|handout:0> at (4,13) {%
+    %  \includegraphics{financeSolution2D_1}\;%
+    %  \includegraphics{financeSolution2D_2}\;%
+    %  \includegraphics{financeSolution2D_4}\\
+    %  \includegraphics{financeSolution2D_6}\;%
+    %  \includegraphics{financeSolution2D_3}\;%
+    %  \includegraphics{financeSolution2D_5}%
+    %};
+    
+    \node<1|handout:0> at (4,13) {%
+      \includegraphics{financeSolution2D_7}\,%
+      \includegraphics{financeSolution2D_8}\,%
+      \includegraphics{financeSolution2D_10}\\
+      \includegraphics{financeSolution2D_12}\,%
+      \includegraphics{financeSolution2D_9}\,%
+      \includegraphics{financeSolution2D_11}%
+    };
+  
+    \node<2|handout:0> at (4,13) {%
+      \includegraphics{financeSolution2D_13}\,%
+      \includegraphics{financeSolution2D_14}\,%
+      \includegraphics{financeSolution2D_16}\\
+      \includegraphics{financeSolution2D_18}\,%
+      \includegraphics{financeSolution2D_15}\,%
+      \includegraphics{financeSolution2D_17}%
+    };
+    
+    \node<3-> at (4,13) {%
+      \includegraphics{financeSolution2D_19}\,%
+      \includegraphics{financeSolution2D_20}\,%
+      \includegraphics{financeSolution2D_22}\\
+      \includegraphics{financeSolution2D_24}\,%
+      \includegraphics{financeSolution2D_21}\,%
+      \includegraphics{financeSolution2D_23}%
+    };
+    
+    \node at (103,39) {%
+      \includegraphics<1|handout:0>{financePointwiseError_1}%
+      \includegraphics<2|handout:0>{financePointwiseError_2}%
+      \includegraphics<3->{financePointwiseError_3}%
+      \quad\raisebox{3.50mm}{\includegraphics{financePointwiseError_4}}%
+    };
+    \node[text width=30mm] at (122,40) {%
+      $\weightedeulererror_t(\vstock_t)$\\
+      ($
+        \ngp_t =
+        \only<1|handout:0>{129}%
+        \only<2|handout:0>{889}%
+        \only<3->{5159}
+      $)%
+    };
+  \end{overlay}
+  
+  \cite[in preparation]{Pflueger19Solving}
+\end{frame}
+
+
+
+\begin{frame}{\insertsubsection}{Monte Carlo Simulation}
+  \begin{overlay}
+    \node at (4,20) {%
+      \includegraphics{financeSimulation_1}%
+    };
+    \node at (55,20) {%
+      \includegraphics{financeSimulation_2}%
+    };
+    \node at (106,20) {%
+      \includegraphics{financeSimulation_3}%
+    };
+    \node[circle,white,fill=mittelblau,inner sep=1mm] at (36,25) {%
+      $d = 3$\vphantom{$d = 345$}%
+    };
+    \node[circle,white,fill=mittelblau,inner sep=1mm] at (87,25) {%
+      $d = 4$\vphantom{$d = 345$}%
+    };
+    \node[circle,white,fill=mittelblau,inner sep=1mm] at (138,25) {%
+      $d = 5$\vphantom{$d = 345$}%
+    };
+  \end{overlay}
+  
+  \cite[in preparation]{Pflueger19Solving}
+\end{frame}
+
+
+
+\subsection{Other Applications from My Thesis}
+
+\begin{frame}{\insertsubsection}
+  \begin{overlay}
+    \only<1|handout:0>{
+      \thesisCircle{59mm}{-45mm}{35mm}{112mm}{62mm}{30mm}{176}
+      \thesisCircleCaption{59mm}{-45mm}{35mm}{127}{53}{%
+        Musculoskeletal model%
+      }
+      \thesisCircle{112.5mm}{-25mm}{22mm}{100mm}{65mm}{40mm}{184}
+      \thesisCircleCaption{112.5mm}{-25mm}{22mm}{158}{22}{%
+        Equilibrium elbow angle%
+      }
+      \thesisCircle{108mm}{-65mm}{18mm}{143mm}{75mm}{52mm}{220}
+      \thesisCircleCaption{108mm}{-65mm}{18mm}{135}{45}{%
+        Future work%
+      }
+    }
+    \only<2|handout:0>{
+      \thesisCircle{49mm}{-45mm}{35mm}{110mm}{150mm}{80mm}{132}
+      \thesisCircleCaption{49mm}{-45mm}{35mm}{115}{65}{%
+        Test problems%
+      }
+      %\thesisCircle{80mm}{-45mm}{35mm}{110mm}{70mm}{49mm}{133}
+      %\thesisCircleCaption{80mm}{-45mm}{35mm}{127}{53}{%
+      %  Constrained test functions%
+      %}
+      \thesisCircle{114mm}{-48mm}{30mm}{105mm}{80mm}{70mm}{141}
+      \thesisCircleCaption{114mm}{-48mm}{30mm}{122}{58}{%
+        Optimality gaps%
+      }
+    }
+    \only<3>{
+      \thesisCircle{44mm}{-48mm}{30mm}{110mm}{85mm}{60mm}{146}
+      \thesisCircleCaption{44mm}{-48mm}{30mm}{138}{42}{%
+        Fuzzy extension principle%
+      }
+      \thesisCircle{108.5mm}{-39mm}{35mm}{100mm}{185mm}{60mm}{149}
+      \thesisCircleCaption{108.5mm}{-39mm}{35mm}{145}{35}{%
+        Fuzzy Ritter{--}Novak grid generation%
+      }
+    }
+  \end{overlay}
+\end{frame}

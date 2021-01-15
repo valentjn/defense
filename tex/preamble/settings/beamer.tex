@@ -1,0 +1,147 @@
+% outer theme
+\useoutertheme[footline=authortitle,subsection=false]{miniframes}
+
+% inner theme
+\useinnertheme{circles}
+
+% color themes
+\usecolortheme{whale}
+\usecolortheme{orchid}
+
+% font themes
+\usefonttheme{structurebold}
+\usefonttheme{serif}
+
+% move frame title to the left and to the top, set color
+\setbeamertemplate{frametitle}[default][left,leftskip=-1mm]
+\addtobeamertemplate{frametitle}{\vspace*{-1mm}}{\vspace*{1mm}}
+\setbeamercolor{frametitle}{fg=mittelblau,bg=white}
+
+% set text margin
+\setbeamersize{text margin left=4mm,text margin right=3mm}
+
+% basic color for all structuring elements (e.g., bullet points)
+\setbeamercolor{structure}{fg=mittelblau}
+
+% don't use balls for enumerate items, use plain black font
+\setbeamertemplate{enumerate item}[default]
+\setbeamertemplate{enumerate subitem}[default]
+\setbeamertemplate{enumerate subsubitem}[default]
+\setbeamercolor{item}{fg=black}
+\setbeamerfont{item}{series=\mdseries}
+
+% font and color of frame number
+% \sffamily\fontsize{3mm}{3mm}\selectfont\bfseries
+\setbeamerfont{footline}{
+  family=\sffamily,
+  series=\bfseries,
+  size={\fontsize{2.5mm}{2.5mm}},
+}
+\setbeamercolor{footline}{fg=white}
+
+% block title
+\setbeamercolor{block title}{bg=mittelblau}
+
+% bibliography colors
+% (only emphasize the title with the mittelblau color,
+% all other text should be black)
+\setbeamercolor{bibliography entry author}{use=normal text,fg=normal text.fg}
+\setbeamercolor{bibliography entry title}{use=structure,fg=structure.fg}
+\setbeamercolor{bibliography entry location}{use=normal text,fg=normal text.fg}
+\setbeamercolor{bibliography entry note}{use=normal text,fg=normal text.fg}
+
+% transitions
+%\renewcommand*{\beamer@framenotesbegin}{%
+%  \transfade[duration=0.2]%
+%  \transfade<1>[duration=0.5]%
+%}
+
+% make covered text transparent (opacity in percent)
+\newcommand*{\uncoveropacityint}{8}
+\setbeamercovered{transparent=\uncoveropacityint}
+
+% scale for including full HD graphics (cover/footer)
+% = 96dpi / (1920px / (160mm / 25.4mm/in))
+\newcommand*{\pngscale}{0.3149606}
+
+% title frame
+\defbeamertemplate*{title page}{customized}[1][]{
+  \begin{overlay}
+    \node at (0,0) {%
+      \includegraphics[scale=\pngscale]{cover}%
+    };
+  \end{overlay}
+}
+\newcommand*{\titleframe}{%
+  \section*{}
+  {%
+    \setbeamertemplate{headline}{}
+    \setbeamertemplate{footline}{}
+    \begin{frame}[noframenumbering]
+      \titlepage
+    \end{frame}
+  }%
+}
+
+% header (empty)
+\defbeamertemplate*{headline}{myminiframes theme}{}
+
+% footer (bar with frame number)
+\setbeamertemplate{footline}{%
+  \raisebox{-0.5\height}{\includegraphics[scale=\pngscale]{footerBar}}%
+  \raisebox{-0.5\height}{\hspace{-1mm}\llap{\insertframenumber}}%
+}
+
+% hide navigation symbols
+\beamertemplatenavigationsymbolsempty
+
+% don't replace font-related stuff
+% (mathdesign is not supported by beamerbasefont),
+% otherwise the l --> \ell replacement in math mode doesn't work
+\beamer@suppressreplacementstrue
+
+% absolute positioning of contents
+\newenvironment*{overlay}[1][]{%
+  \begin{tikzpicture}[
+    remember picture,
+    overlay,
+    x=1mm,
+    y=-1mm,
+    shift={(current page.north west)},
+    every node/.style={anchor=north west,align=flush left,inner sep=0mm},
+    tight background,
+    background grid/.style={
+      draw,
+      black!50,
+      step=10mm,
+      shift={(current page.north west)},
+    },
+    #1
+  ]%
+}{%
+  \end{tikzpicture}%
+}
+
+% define \hvisible and \vvisible: similar to \visible,
+% except that they only reserve horizontal or vertical space
+% if not visible on current slide
+% (\visible reserves both horizontal and vertical space)
+\newcommand<>{\hvisible}[1]{\alt#2{#1}{\hphantom{#1}}}
+\newcommand<>{\vvisible}[1]{\alt#2{#1}{\vphantom{#1}}}
+
+% define \guncover: similar to \uncover, except that it works
+% for graphics (\uncover has no effect on those)
+\pgfmathsetmacro{\uncoveropacity}{\uncoveropacityint/100}
+\pgfmathsetmacro{\uncoveralpha}{1-\uncoveropacity}
+\newcommand<>{\guncover}[1]{%
+  \alt#2{#1}{{\transparent{\uncoveropacity}#1}}%
+}
+
+% remove footnote rule
+\renewcommand*{\footnoterule}{}
+
+% remove indentation in footnotes
+\defbeamertemplate*{footnote}{customized}{%
+  \noindent%
+  \insertfootnotemark\insertfootnotetext\par%
+}

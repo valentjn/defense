@@ -1,0 +1,57 @@
+import subprocess
+
+Import("env")
+Import("Helper")
+env = env.Clone()
+
+# install PDFs in out directory, except the virtual draftTarget PDF,
+# which is assumed to be at the end of BUILD_PDFS
+pdfs = env.Install(".", env["BUILD_PDFS"][:-1])
+
+# generate handout nup version
+hasPDFJam = Helper.checkProgramInstalled(env, "pdfjam")
+
+if hasPDFJam:
+  handoutNupPDF = env.Command("defenseHandoutNup.pdf", "defenseHandout.pdf",
+      "pdfjam --quiet --keepinfo --nup 2x2 --landscape --scale 0.96 "
+      "--delta '5mm 15mm' --outfile $TARGET $SOURCE '2-' && "
+      "pdfjam --quiet --keepinfo --angle 90 --outfile $TARGET $TARGET")
+  pdfs.append(handoutNupPDF)
+else:
+  warnings.warn("pdfjam required for producing nup versions. "
+                "Skipping generation of handout nup version.")
+
+# compress PDFs
+env.AddPostAction(pdfs, Helper.compressPDFs)
+
+# split into parts for presentation with "impressive"
+def splitSlides(target, source, env):
+  sourcePath = source[0].abspath
+  targetPaths = [x.abspath for x in target]
+  output = Helper.runCommand(["pdfinfo", sourcePath],
+                             stdout=subprocess.PIPE).stdout.decode()
+  numberOfPages = int(next(x.split()[-1] for x in output.splitlines()
+                           if x.lower().startswith("pages:")))
+  
+  for page in range(numberOfPages, 0, -1):
+    text = Helper.runCommand(
+        ["pdftotext", "-q", "-f", str(page), "-l", str(page),
+         sourcePath, "-"], stdout=subprocess.PIPE).stdout.decode()
+    if "glasses" in text.lower(): break
+  
+  Helper.runCommand(["pdfjam", "--landscape", "--papersize", "{90mm,160mm}",
+                     sourcePath, "1-{}".format(page), "-o", targetPaths[0]])
+  Helper.runCommand(["pdfjam", "--landscape", "--papersize", "{90mm,160mm}",
+                     sourcePath, "{}-".format(page+1), "-o", targetPaths[1]])
+
+slidesPDF      = "defenseSlides.pdf"
+slidesPDFPart1 = "defenseSlidesPart1.pdf"
+slidesPDFPart2 = "defenseSlidesPart2.pdf"
+env.Command([slidesPDFPart1, slidesPDFPart2], slidesPDF, splitSlides)
+pdfs.extend([slidesPDFPart1, slidesPDFPart2])
+
+# don't clean PDFs in out directory
+env.NoClean(pdfs)
+
+# generate by default (if invoked with just `scons`) only the PDFs
+env.Default(pdfs)

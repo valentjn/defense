@@ -1,0 +1,327 @@
+\section{Algorithms and Theory}
+
+
+
+\begin{frame}<handout:0>[noframenumbering]
+  \begin{overlay}
+    \sectionCircle
+    \subsectionCircle{50}{60}{Boundary\\Behavior}{1}
+    \subsectionCircle{110}{60}{Hierarchization\\Algorithms}{0}
+  \end{overlay}
+\end{frame}
+
+
+
+\subsection{Boundary Behavior and Not-A-Knot B-Splines}
+
+\begin{frame}{\insertsubsection}
+  \begin{overlay}
+    \fill[anthrazit!20,rounded corners=3mm] (-20,8) rectangle (52,81);
+    \node at (2,43) {%
+      \includegraphics<1-2|handout:0>{nakInterpolation_3}%
+      \includegraphics<3->{nakInterpolation_5}%
+    };
+    \node at (2,10) {%
+      \includegraphics<1|handout:0>{nakInterpolation_1}%
+      \includegraphics<2|handout:0>{nakInterpolation_2}%
+      \includegraphics<3->{nakInterpolation_4}%
+    };
+    \node[anchor=west,text width=50mm] at (56,32) {%
+      \only<1-2|handout:0>{%
+        {%
+          \uncover<2->{%
+            Standard B-splines:
+            $\bspl{l,i}{p}(x) \ceq \cardbspl{p}(2^l x + \tfrac{p+1}{2} - i)$%
+            \\[0.5em]
+            Spanned spaces coincide only on
+            $
+              \rspldomain{l}{p}
+              \ceq \clint{\gp{l,\frac{p-1}{2}},\; 1 - \gp{l,\frac{p-1}{2}}}
+            $
+            (Schoenberg--Whitney cond.)\\[0.5em]
+            \follows \textbf{\textcolor{C0}{Polynomials} are not replicated}%
+          }%
+        }%
+      }%
+      \only<3->{%
+        Solution: Remove knots corresponding to
+        $\tfrac{p-1}{2}$ first and last inner grid points
+        (\tikz{
+          \draw (-0.8,-0.8) -- (0.8,0.8);
+          \draw (-0.8,0.8) -- (0.8,-0.8);
+        })\\[0.5em]
+        Use Lagrange polynomials for low levels\\[0.5em]
+        \follows \textbf{\textcolor{C0}{Polynomials} are replicated}
+        on regular SGs if level high enough
+      }%
+    };
+    \guncover<2->{
+      \node[anchor=south west] at (54,80) {%
+        \includegraphics<1-2|handout:0>{hierarchicalBasis_2}%
+        \includegraphics<3>{hierarchicalBasis_5}%
+      };
+      \node[anchor=south west] at (109,80) {%
+        \includegraphics<1-2|handout:0>{hierarchicalBasis_4}%
+        \includegraphics<3>{hierarchicalBasis_6}%
+      };
+    }
+    \uncover<2->{
+      \draw[
+        decorate,
+        decoration={brace,amplitude=2mm,aspect=0.137},
+      ] (109,79) -- (109,6);
+      \node[anchor=east] at (106.5,69) {%
+        \only<1-2|handout:0>{$\not= \oplus$}%
+        \only<3>{$= \oplus$}%
+      };
+    }
+  \end{overlay}
+  
+  \cite[in preparation]{Valentin19Boundary}
+\end{frame}
+
+\begin{frame}{\insertsubsection}
+  \begin{overlay}
+    \node at (4,9) {\includegraphics{resultsInterpolation_2}};
+    \node at (4,22) {\includegraphics{resultsInterpolation_1}};
+    
+    \node at (74,22.2) {\small($\leftarrow$ not a polynomial)};
+    
+    \only<2->{
+      \thesisCircle{105mm}{-35mm}{25mm}{60mm}{105mm}{50mm}{71}
+      \thesisCircleCaption{105mm}{-35mm}{25mm}{125}{55}{Modified NAK}
+      \node at (110,5) {\heading{Can be combined to\dots}};
+    }
+    \only<3->{
+      \thesisCircle{130mm}{-55mm}{25mm}{140mm}{105mm}{50mm}{71}
+      \thesisCircleCaption{130mm}{-55mm}{25mm}{140}{40}{%
+        Clenshaw{--}Curtis NAK%
+      }
+    }
+  \end{overlay}
+  
+  \cite[in preparation]{Valentin19Boundary}
+\end{frame}
+
+
+
+\begin{frame}<handout:0>[noframenumbering]
+  \begin{overlay}
+    \sectionCircle
+    \subsectionCircle{50}{60}{Boundary\\Behavior}{0}
+    \subsectionCircle{110}{60}{Hierarchization\\Algorithms}{1}
+  \end{overlay}
+\end{frame}
+
+
+
+\subsection{The Hierarchization Problem}
+
+\begin{frame}{\insertsubsection}
+  \begin{overlay}
+    \node[text width=72mm] at (4,20) {%
+      Given SG $\{\gp{\*l,\*i} \mid (\*l, \*i) \in \liset\}$
+      and function values $\fcnval{\*l,\*i}$.\\
+      Find surpluses $\surplus{\*l',\*i'}$ such that\\[0.2em]
+      $
+        \underbrace{
+          \sum_{(\*l',\*i') \in \liset}\!\!
+          \surplus{\*l',\*i'}
+          \textcolor{C0}{\bspl{p}{\*l',\*i'}(\gp{\*l,\*i})}
+        }_{\sgintp(\gp{\*l,\*i})}
+        = \fcnval{\*l,\*i},\quad
+        (\*l, \*i) \in \liset
+      $.%
+    };
+    \node[text width=70mm,align=flush center] at (4,58) {%
+      $\iff \vsurplus = \textcolor{C1}{\intpmatinv}\vfcnval$%
+    };
+    \guncover<2->{
+      \node at (75,4) {\includegraphics<1-2>{matrixDensityPattern_1}};
+    }
+  \end{overlay}
+\end{frame}
+
+
+
+\subsection{Hierarchization on Spatially Adaptive Sparse Grids}
+
+\begin{frame}{\insertsubsection}{Breadth-First Search and Fundamental Splines}
+  \begin{overlay}
+    \node[anchor=south west] at (4,81) {%
+      \includegraphics<1-2|handout:0>{hierarchicalBasis_7}%
+      \includegraphics<3->{hierarchicalBasis_8}%
+    };
+    \node at (54,26) {\textcolor{C0}{$\intpmat$}};
+    \node at (58,12) {%
+      \includegraphics<1-2|handout:0>{matrixDensityPattern_2}%
+      \includegraphics<3->{matrixDensityPattern_3}%
+    };
+    \guncover<2->{
+      \node at (53,44) {\includegraphics{fundamentalSpline_1}};
+      \node[text width=63mm] at (95,12) {%
+        \heading{Fundamental property:}\\
+        $
+          \basis{l',i'}(\mathrlap{\gp{l,i}}\hphantom{\gp{l',i}}) = 0,\quad
+          l < l',\;\;
+          i \in \hiset{l}
+        $\\
+        $
+          \basis{l',i'}(\gp{l',i})
+          = \mathrlap{\kronecker{i}{i'},}\hphantom{0,\quad l < l',\;\;\,}
+          i \in \hiset{l'}
+        $\\[0.5em]
+        \follows For higher dimensionalities:\\
+        $
+          \basis{\*l',\*i'}(\gp{\*l,\*i})
+          = \mathrlap{0,}
+          \hphantom{\kronecker{(\*l,\*i)}{(\*l',\*i')},\;\;\,}
+          \normone{\*l} < \normone{\*l'}
+        $\\
+        $
+          \basis{\*l',\*i'}(\gp{\*l,\*i})
+          = \kronecker{(\*l,\*i)}{(\*l',\*i')},\;\;
+          \normone{\*l} = \normone{\*l'}
+        $\\[1.3em]
+        \heading{Transformations:}
+        \begin{itemize}
+          \item
+          Hierarchical fundamental transformation
+          
+          \item
+          Translation-invariant fundamental transformation\\
+          \follows \alert<3->{Fundamental splines}
+        \end{itemize}%
+      };
+    }
+    \only<4-|handout:0>{
+      \thesisCircle{80mm}{-35mm}{25mm}{65mm}{110mm}{50mm}{101}
+      \thesisCircleCaption{80mm}{-35mm}{25mm}{135}{45}{%
+        Modified fund. spl.%
+      }
+    }
+    \only<5-|handout:0>{
+      \thesisCircle{120mm}{-55mm}{25mm}{145mm}{105mm}{50mm}{104}
+      \thesisCircleCaption{120mm}{-55mm}{25mm}{127}{53}{%
+        Fund. NAK spl.%
+      }
+    }
+  \end{overlay}
+  
+  \cite{Valentin18Fundamental}
+\end{frame}
+
+
+
+\begin{frame}{\insertsubsection}{%
+  Unidirectional Principle -- Equivalence and Chains%
+}
+  \begin{overlay}
+    \node at (4,15) {\includegraphics{unidirectionalPrinciple_3}};
+    \node[text width=80mm] at (4,50) {%
+      $(t_d, \dotsc, t_1)$ permutation of $(1, \dotsc, d)$\\[0.5em]
+      \heading{UP correct} for $\intpmatinv$ and $(t_d, \dotsc, t_1)$\\
+      $
+        \iff \intpmatinv_{t_1} \dotsm \intpmatinv_{t_d}
+        \overset{?}{=} \intpmatinv
+      $\\[-0.25em]
+      $
+        \iff \intpmat_{t_d} \dotsm \intpmat_{t_1} \overset{?}{=} \intpmat
+      $\\[0.25em]
+      $\iff$ UP correct for $\intpmat$ and $(t_1, \dotsc, t_d)$%
+    };
+    \guncover<2->{
+      \fill[anthrazit!20,rounded corners=3mm] (82,10) rectangle (170,53);
+      \node[text width=71mm] at (85,12) {%
+        \heading{Chains} $(\*k^{(0)}, \dotsc, \*k^{(d)})$
+        w.r.t.\ $(t_1, \dotsc t_d)$:\\[0.2em]
+        \raisebox{-0.5\height}{\includegraphics{chainDefinition_1}}\quad%
+        \raisebox{-0.5\height}{\includegraphics{chainDefinition_2}}%
+      };
+    }
+    \uncover<3->{
+      \node[text width=71mm] at (85,55) {%
+        \heading{Theorem:}\\
+        UP correct for $\intpmat$ and $(t_1, \dotsc, t_d)$\\
+        $\iff$ Grid contains chain from $\*k^{(0)}$ to $\*k^{(d)}$
+        for all grid points $\*k^{(0)}, \*k^{(d)}$ for which
+        $\basis{\*k^{(0)}}(\gp{\*k^{(d)}}) \not= 0$%
+      };
+    }
+    \only<4-|handout:0>{
+      \thesisCircle{80mm}{-45mm}{35mm}{85mm}{150mm}{70mm}{238}
+      \thesisCircleCaption{80mm}{-45mm}{35mm}{115}{65}{%
+        Formal proofs%
+      }
+    }
+  \end{overlay}
+  
+  \cite[in preparation]{Valentin19Boundary}
+\end{frame}
+
+
+
+\begin{frame}{\insertsubsection}{%
+  Unidirectional Principle --
+  Weakly Fundamental Splines and Hermite Hierarchization%
+}
+  \begin{overlay}
+    \node[text width=50mm] at (11,14) {%
+      \only<1|handout:0>{Original grid}%
+      \only<2|handout:0>{Chains for $p = 1$}%
+      \only<3->{Chains for $p = 3$}%
+    };
+    \node[rotate=90] at (4,47) {Standard B-spl.};
+    \uncover<5->{
+      \node[rotate=90] at (4,72) {WF spl.};
+    }
+    \node[text width=50mm] at (11,19) {%
+      \includegraphics<1|handout:0>{chainInsertion_1}%
+      \includegraphics<2|handout:0>{chainInsertion_2}%
+      \includegraphics<3->{chainInsertion_3}\\[0.8em]
+      \guncover<5->{\includegraphics{chainInsertion_4}}%
+    };
+    \uncover<4>{
+      \node<1-4|handout:0>[text width=53mm] at (44,18) {%
+        Goal: Compactly supported spline basis with
+        few chain points to be inserted.\\[0.7em]
+        \heading{Weakly fundamental property:}\\
+        $
+          \basis{l',i'}(\mathrlap{\gp{l,i}}\hphantom{\gp{l',i}}) = 0,\quad
+          l < l',\;\;
+          i \in \hiset{l}
+        $\\[0.7em]
+        \follows \heading{Weakly fundamental splines}%
+      };
+    }
+    \guncover<4->{
+      \node<1-4|handout:0> at (44,52) {%
+        \includegraphics{weaklyFundamentalSpline_1}%
+      };
+    }
+    \node at (47,12) {%
+      \includegraphics<5->{hierarchicalBasis_9}%
+    };
+    \guncover<6->{
+      \fill[anthrazit!20,rounded corners=3mm] (97,14) rectangle (170,80);
+      \node[text width=55mm] at (101,16) {%
+        \heading{Hermite hierarchization:}\\
+        Uses WF property, save values and derivatives
+        of current interpolant%
+      };
+      \node[anchor=south west] at (99,78) {%
+        \includegraphics<1-6|handout:0>{hermiteHierarchization_1}%
+        \includegraphics<7|handout:0>{hermiteHierarchization_2}%
+        \includegraphics<8|handout:0>{hermiteHierarchization_3}%
+        \includegraphics<9|handout:0>{hermiteHierarchization_4}%
+        \includegraphics<10|handout:0>{hermiteHierarchization_5}%
+        \includegraphics<11|handout:0>{hermiteHierarchization_6}%
+        \includegraphics<12|handout:0>{hermiteHierarchization_7}%
+        \includegraphics<13|handout:0>{hermiteHierarchization_8}%
+        \includegraphics<14->{hermiteHierarchization_9}%
+      };
+    }
+  \end{overlay}
+  
+  \cite[in preparation]{Valentin19Boundary}
+\end{frame}

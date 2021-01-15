@@ -1,0 +1,19 @@
+% customize itemize
+\setlist[itemize]{
+  % use beamer style label
+  label=\usebeamerfont*{itemize item}%
+      \usebeamercolor[fg]{itemize item}%
+      \usebeamertemplate{itemize item},
+  % decrease left margin
+  leftmargin=1.5em,
+}
+
+% customize enumerate
+\setlist[enumerate,1]{
+  % use beamer style label
+  label=\protect\usebeamerfont{enumerate item}%
+      \protect\usebeamercolor[fg]{enumerate item}%
+      \insertenumlabel.,
+  % decrease left margin
+  leftmargin=1.9em,
+}
